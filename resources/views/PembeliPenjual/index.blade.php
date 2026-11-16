@@ -10,7 +10,7 @@
                 Kebutuhan Kuliah, dari Mahasiswa untuk Mahasiswa
             </h1>
             <p class="text-foreground text-base max-w-3xl mx-auto text-balance sm:text-lg">
-                Cari buku, modul, kalkulator, jas lab, dan perlengkapan kuliah lainnya dari sesama mahasiswa PCR.
+                Cari buku, modul, kalkulator, jas lab, dan perlengkapan kuliah lainnya? Cuman di MARKETPCR Saja! Sesama mahasiswa PCR udah pasti Trusted Loh!
             </p>
         </div>
         <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
@@ -27,7 +27,7 @@
                                 <path
                                     d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5">
                                 </path>
-                            </svg></button><a class="block relative" href="{{ route('penjualpembeli.show', $item->id) }}">
+                            </svg></button><a class="block relative" href="{{ route('penjualpembeli.show', $item->pembeli_penjual_id) }}">
                             <div class="aspect-square overflow-hidden bg-muted">
                                 <img alt="{{ $item->nama_barang }}" loading="lazy" width="400" height="400"
                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -55,7 +55,7 @@
                         </a>
                     </div>
                     <div class="p-4 space-y-3">
-                        <a href="{{ route('penjualpembeli.show', $item->id) }}">
+                        <a href="{{ route('penjualpembeli.show', $item->pembeli_penjual_id) }}">
                             <h2 class="font-semibold text-foreground line-clamp-2 hover:text-primary transition-colors">
                                 {{ $item->nama_barang }}
                             </h2>
@@ -66,7 +66,7 @@
                             <span class="text-lg font-bold text-foreground">Rp
                                 {{ number_format($item->harga, 0, ',', '.') }}</span>
                         </div>
-                        <a href="{{ route('penjualpembeli.show', $item->id) }}"
+                        <a href="{{ route('penjualpembeli.show', $item->pembeli_penjual_id) }}"
                             class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 shadow h-9 px-4 py-2 w-full transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
