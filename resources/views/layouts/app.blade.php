@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bloom E-Commerce Template</title>
+    <title>@yield('title', 'Marketplace Mahasiswa PCR')</title>
     <meta name="description"
         content="Discover a wide selection of trendy clothes, shoes and accessories on Bloom E-Commerce. Enjoy fast delivery and free returns. Shop now!" />
     <link rel="stylesheet" href="{{ asset('css/bloom.css') }}" />
@@ -18,19 +18,22 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-8 lg:space-x-12">
                     <a class="text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors"
-                        aria-label="BloomShop Home" href="index.html">BLOOM<span class="text-primary">SHOP</span></a>
+                        aria-label="Beranda" href="{{ route('penjualpembeli.index') }}">MARKET<span
+                            class="text-primary">PCR</span></a>
                     <nav class="hidden md:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
+                        <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.index') ? 'bg-orange-100 shadow-md' : '' }}"
+                            href="{{ route('penjualpembeli.index') }}">Beranda</a>
                         <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                            href="contact.html">Contact</a>
+                            href="#">Barang Saya</a>
                     </nav>
                 </div>
                 <div class="hidden lg:flex flex-1 max-w-md mx-8">
-                    <form class="relative w-full">
-                        <input type="search" placeholder="Search products..."
+                    <form class="relative w-full" action="{{ route('penjualpembeli.index') }}" method="GET">
+                        <input type="search" name="q" placeholder="Cari barang..."
                             class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
-                            aria-label="Search products" value="" /><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round"
+                            aria-label="Cari barang" value="{{ request('q') }}" /><svg
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="lucide lucide-search absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
                             aria-hidden="true">
                             <path d="m21 21-4.34-4.34"></path>
@@ -53,36 +56,34 @@
                             class="lucide lucide-x h-6 w-6 text-gray-700" aria-hidden="true">
                             <path d="M18 6 6 18"></path>
                             <path d="m6 6 12 12"></path>
-                        </svg></button><a
-                        class="relative p-2 rounded-full hover:bg-gray-100 transition-all duration-200 group"
-                        aria-label="Shopping cart with 0 items" href="cart.html"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-shopping-cart h-6 w-6 text-gray-700 group-hover:text-gray-900 transition-colors"
-                            aria-hidden="true">
-                            <circle cx="8" cy="21" r="1"></circle>
-                            <circle cx="19" cy="21" r="1"></circle>
-                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12">
-                            </path>
-                        </svg></a>
+                        </svg></button><a href="{{ route('penjualpembeli.create') }}"
+                        class="hidden sm:inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-plus h-4 w-4" aria-hidden="true">
+                            <path d="M5 12h14"></path>
+                            <path d="M12 5v14"></path>
+                        </svg>
+                        Jual Barang
+                    </a>
                     <div class="hidden sm:flex items-center space-x-2">
-                        <a href="index.html"><button
+                        <a href="#"><button
                                 class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-sm">
-                                Sign In
-                            </button></a><a href="index.html"><button
+                                Masuk
+                            </button></a><a href="#"><button
                                 class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm">
-                                Sign Up
+                                Daftar
                             </button></a>
                     </div>
                 </div>
             </div>
             <div class="lg:hidden mt-4 animate-in slide-in-from-top duration-200 hidden" id="mobile-search">
-                <form class="relative">
-                    <input placeholder="Search products..."
+                <form class="relative" action="{{ route('penjualpembeli.index') }}" method="GET">
+                    <input name="q" placeholder="Cari barang..."
                         class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                        aria-label="Search products" type="search" value="" /><svg xmlns="http://www.w3.org/2000/svg"
-                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round"
+                        aria-label="Cari barang" type="search" value="{{ request('q') }}" /><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="lucide lucide-search absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
                         aria-hidden="true">
                         <path d="m21 21-4.34-4.34"></path>
@@ -94,13 +95,23 @@
                 aria-label="Mobile navigation" id="mobile-menu">
                 <div class="flex flex-col space-y-3 pb-4 border-b border-gray-200">
                     <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                        href="contact.html">Contact</a>
+                        href="{{ route('penjualpembeli.index') }}">Beranda</a>
+                    <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                        href="#">Barang Saya</a>
+                    <a class="inline-flex items-center justify-center gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm"
+                        href="{{ route('penjualpembeli.create') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus h-4 w-4"
+                            aria-hidden="true">
+                            <path d="M5 12h14"></path>
+                            <path d="M12 5v14"></path>
+                        </svg> Jual Barang</a>
                 </div>
                 <div class="flex flex-col space-y-3 pt-4 sm:hidden">
                     <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full text-sm"
-                        href="index.html">Sign In</a><a
+                        href="#">Masuk</a><a
                         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full text-sm"
-                        href="index.html">Sign Up</a>
+                        href="#">Daftar</a>
                 </div>
             </nav>
         </div>
@@ -136,7 +147,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
                     <div class="lg:col-span-2">
                         <a class="text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors"
-                            aria-label="BloomShop Home" href="index.html">BLOOM<span
+                            aria-label="BloomShop Home" href="{{ route('penjualpembeli.index') }}">BLOOM<span
                                 class="text-primary">SHOP</span></a>
                         <p class="text-muted-foreground mb-6 max-w-sm">
                             Discover unique products that inspire your lifestyle. Quality craftsmanship meets modern
@@ -240,19 +251,19 @@
                         <ul class="space-y-3">
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="contact.html">Contact Us</a>
+                                    href="#">Contact Us</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Help Center</a>
+                                    href="{{ route('penjualpembeli.index') }}">Help Center</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Shipping Info</a>
+                                    href="{{ route('penjualpembeli.index') }}">Shipping Info</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Returns &amp; Exchanges</a>
+                                    href="{{ route('penjualpembeli.index') }}">Returns &amp; Exchanges</a>
                             </li>
                         </ul>
                     </div>
@@ -265,15 +276,15 @@
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Careers</a>
+                                    href="{{ route('penjualpembeli.index') }}">Careers</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Blog</a>
+                                    href="{{ route('penjualpembeli.index') }}">Blog</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Press</a>
+                                    href="{{ route('penjualpembeli.index') }}">Press</a>
                             </li>
                         </ul>
                     </div>
@@ -282,19 +293,19 @@
                         <ul class="space-y-3">
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Privacy Policy</a>
+                                    href="{{ route('penjualpembeli.index') }}">Privacy Policy</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Terms &amp; Conditions</a>
+                                    href="{{ route('penjualpembeli.index') }}">Terms &amp; Conditions</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Cookie Policy</a>
+                                    href="{{ route('penjualpembeli.index') }}">Cookie Policy</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="index.html">Accessibility</a>
+                                    href="{{ route('penjualpembeli.index') }}">Accessibility</a>
                             </li>
                         </ul>
                     </div>

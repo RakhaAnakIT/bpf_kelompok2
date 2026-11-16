@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\PenjualPembeli;
 
 class PenjualPembeliController extends Controller
 {
@@ -11,7 +12,8 @@ class PenjualPembeliController extends Controller
      */
     public function index()
     {
-        return view('PembeliPenjual.index');
+        $data['dataPenjualPembeli'] = PenjualPembeli::latest()->get();
+        return view('PembeliPenjual.index', $data);
     }
 
     /**
@@ -19,7 +21,7 @@ class PenjualPembeliController extends Controller
      */
     public function create()
     {
-        //
+        return view('PembeliPenjual.create');
     }
 
     /**
@@ -27,7 +29,20 @@ class PenjualPembeliController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data['nama_barang'] = $request->nama_barang;
+        $data['kategori_barang'] = $request->kategori_barang;
+        $data['harga'] = $request->harga;
+        $data['kondisi'] = $request->kondisi;
+        $data['lokasi'] = $request->lokasi;
+        $data['deskripsi'] = $request->deskripsi;
+
+        if ($request->hasFile('gambar')) {
+            $data['gambar'] = $request->file('gambar')->store('barang', 'public');
+        }
+
+        PenjualPembeli::create($data);
+
+        return redirect()->route('penjualpembeli.index')->with('success', 'Barang berhasil diunggah!');
     }
 
     /**
@@ -43,7 +58,8 @@ class PenjualPembeliController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data['dataPenjualPembeli'] = PenjualPembeli::findOrFail($id);
+        return view('PembeliPenjual.edit', $data);
     }
 
     /**
@@ -51,7 +67,22 @@ class PenjualPembeliController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $barang = PenjualPembeli::findOrFail($id);
+
+        $barang->nama_barang = $request->nama_barang;
+        $barang->kategori_barang = $request->kategori_barang;
+        $barang->harga = $request->harga;
+        $barang->kondisi = $request->kondisi;
+        $barang->lokasi = $request->lokasi;
+        $barang->deskripsi = $request->deskripsi;
+        $barang->status = $request->status;
+
+        if ($request->hasFile('gambar')) {
+            $barang->gambar = $request->file('gambar')->store('barang', 'public');
+        }
+
+        $barang->save();
+        return redirect()->route('penjualpembeli.index')->with('success', 'Perubahan Data Berhasil!');
     }
 
     /**
@@ -59,6 +90,9 @@ class PenjualPembeliController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $barang = PenjualPembeli::findOrFail($id);
+
+        $barang->delete();
+        return redirect()->route('penjualpembeli.index')->with('success', 'Data berhasil dihapus');
     }
 }
