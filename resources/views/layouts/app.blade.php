@@ -21,10 +21,18 @@
                         aria-label="Beranda" href="{{ route('penjualpembeli.index') }}">MARKET<span
                             class="text-primary">PCR</span></a>
                     <nav class="hidden md:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
-                        <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.index') ? 'bg-orange-100 shadow-md' : '' }}"
-                            href="{{ route('penjualpembeli.index') }}">Beranda</a>
-                        <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                            href="#">Barang Saya</a>
+                        @if (!auth()->check() || auth()->user()->role != 'penjual')
+                            <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.index') ? 'bg-orange-100 shadow-md' : '' }}"
+                                href="{{ route('penjualpembeli.index') }}">Beranda</a>
+                        @endif
+                        @auth
+                            @if (auth()->user()->role != 'pembeli')
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900" href="#">Barang Saya</a>
+                            @endif
+                            @if (auth()->user()->role != 'penjual')
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900" href="#">Riwayat Pemesanan</a>
+                            @endif
+                        @endauth
                     </nav>
                 </div>
                 <div class="hidden lg:flex flex-1 max-w-md mx-8">
@@ -56,7 +64,8 @@
                             class="lucide lucide-x h-6 w-6 text-gray-700" aria-hidden="true">
                             <path d="M18 6 6 18"></path>
                             <path d="m6 6 12 12"></path>
-                        </svg></button><a href="{{ route('penjualpembeli.create') }}"
+                        </svg></button>@if (!auth()->check() || auth()->user()->role != 'pembeli')
+                    <a href="{{ route('penjualpembeli.create') }}"
                         class="hidden sm:inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -66,14 +75,21 @@
                         </svg>
                         Jual Barang
                     </a>
+                    @endif
                     <div class="hidden sm:flex items-center space-x-2">
-                        <a href="#"><button
-                                class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-sm">
-                                Masuk
-                            </button></a><a href="#"><button
-                                class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm">
-                                Daftar
-                            </button></a>
+                        @auth
+                            <div class="text-right leading-tight">
+                                <div class="text-sm font-medium text-foreground">{{ auth()->user()->name }}</div>
+                                <div class="text-xs text-muted-foreground">{{ str_replace('_', ' & ', ucwords(auth()->user()->role, '_')) }}</div>
+                            </div>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-sm">Keluar</button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-sm">Masuk</a>
+                            <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm">Daftar</a>
+                        @endauth
                     </div>
                 </div>
             </div>
@@ -94,11 +110,19 @@
             <nav class="md:hidden mt-4 animate-in slide-in-from-top duration-200 hidden" role="navigation"
                 aria-label="Mobile navigation" id="mobile-menu">
                 <div class="flex flex-col space-y-3 pb-4 border-b border-gray-200">
-                    <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                        href="{{ route('penjualpembeli.index') }}">Beranda</a>
-                    <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                        href="#">Barang Saya</a>
-                    <a class="inline-flex items-center justify-center gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm"
+                    @if (!auth()->check() || auth()->user()->role != 'penjual')
+                        <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('penjualpembeli.index') }}">Beranda</a>
+                    @endif
+                    @auth
+                        @if (auth()->user()->role != 'pembeli')
+                            <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="#">Barang Saya</a>
+                        @endif
+                        @if (auth()->user()->role != 'penjual')
+                            <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="#">Riwayat Pemesanan</a>
+                        @endif
+                    @endauth
+                    @if (!auth()->check() || auth()->user()->role != 'pembeli')
+                        <a class="inline-flex items-center justify-center gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm"
                         href="{{ route('penjualpembeli.create') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
                             height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus h-4 w-4"
@@ -106,12 +130,22 @@
                             <path d="M5 12h14"></path>
                             <path d="M12 5v14"></path>
                         </svg> Jual Barang</a>
+                    @endif
                 </div>
                 <div class="flex flex-col space-y-3 pt-4 sm:hidden">
-                    <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full text-sm"
-                        href="#">Masuk</a><a
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full text-sm"
-                        href="#">Daftar</a>
+                    @auth
+                        <div class="text-sm text-foreground px-3">
+                            {{ auth()->user()->name }}
+                            <span class="text-muted-foreground">({{ str_replace('_', ' & ', ucwords(auth()->user()->role, '_')) }})</span>
+                        </div>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full text-sm">Keluar</button>
+                        </form>
+                    @else
+                        <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full text-sm" href="{{ route('login') }}">Masuk</a>
+                        <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full text-sm" href="{{ route('register') }}">Daftar</a>
+                    @endauth
                 </div>
             </nav>
         </div>
