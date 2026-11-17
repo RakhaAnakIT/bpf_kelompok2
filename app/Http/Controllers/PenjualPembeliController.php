@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PenjualPembeli;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PenjualPembeliController extends Controller
 {
@@ -13,7 +14,6 @@ class PenjualPembeliController extends Controller
      */
     public function index(Request $request)
     {
-        // Penjual tidak melihat Beranda, langsung ke Barang Saya
         if (Auth::check() && Auth::user()->role == 'penjual') {
             return redirect()->route('penjualpembeli.barangsaya');
         }
@@ -73,7 +73,8 @@ class PenjualPembeliController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $data['dataPenjualPembeli'] = PenjualPembeli::with('user')->findOrFail($id);
+        return view('PembeliPenjual.show', $data);
     }
 
     /**
@@ -81,7 +82,6 @@ class PenjualPembeliController extends Controller
      */
     public function edit(string $id)
     {
-        // Hanya pemilik barang yang bisa mengedit
         $data['dataPenjualPembeli'] = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
         return view('PembeliPenjual.edit', $data);
     }
@@ -102,19 +102,23 @@ class PenjualPembeliController extends Controller
         $barang->status = $request->status;
 
         if ($request->hasFile('gambar')) {
+            if ($barang->gambar) {
+                Storage::disk('public')->delete($barang->gambar);
+            }
             $barang->gambar = $request->file('gambar')->store('barang', 'public');
         }
 
         $barang->save();
-        return redirect()->route('penjualpembeli.barangsaya')->with('success', 'Perubahan Data Berhasil!');
+        return redirect()->route('penjualpembeli.show', $barang->pembeli_penjual_id)->with('success', 'Perubahan Data Berhasil!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $barang = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
+
+        if ($barang->gambar) {
+            Storage::disk('public')->delete($barang->gambar);
+        }
 
         $barang->delete();
         return redirect()->route('penjualpembeli.barangsaya')->with('success', 'Data berhasil dihapus');
