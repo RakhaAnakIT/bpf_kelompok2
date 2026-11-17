@@ -21,7 +21,7 @@ class AuthController extends Controller
             'nim'      => 'required|max:20|unique:users,nim',
             'prodi'    => 'required',
             'role'     => 'required|in:penjual,pembeli,penjual_pembeli',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:8|confirmed',
         ], [
             'nim.unique'         => 'NIM sudah terdaftar, silakan masuk.',
             'password.confirmed' => 'Konfirmasi password tidak sama.',
@@ -63,6 +63,12 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+
+            // Penjual langsung ke Barang Saya, yang lain ke Beranda
+            if (Auth::user()->role == 'penjual') {
+                return redirect()->route('penjualpembeli.barangsaya')
+                    ->with('success', 'Selamat datang, ' . Auth::user()->nama . '!');
+            }
 
             return redirect()->route('penjualpembeli.index')
                 ->with('success', 'Selamat datang, ' . Auth::user()->nama . '!');

@@ -4,16 +4,38 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PenjualPembeli;
+use Illuminate\Support\Facades\Auth;
 
 class PenjualPembeliController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data['dataPenjualPembeli'] = PenjualPembeli::latest()->get();
+        // Penjual tidak melihat Beranda, langsung ke Barang Saya
+        if (Auth::check() && Auth::user()->role == 'penjual') {
+            return redirect()->route('penjualpembeli.barangsaya');
+        }
+
+        $query = PenjualPembeli::latest();
+
+        if (Auth::check()) {
+            $query->where('user_id', '!=', Auth::id());
+        }
+
+        if ($request->q) {
+            $query->where('nama_barang', 'like', '%' . $request->q . '%');
+        }
+
+        $data['dataPenjualPembeli'] = $query->get();
         return view('PembeliPenjual.index', $data);
+    }
+
+    public function barangSaya()
+    {
+        $data['dataPenjualPembeli'] = PenjualPembeli::where('user_id', Auth::id())->latest()->get();
+        return view('PembeliPenjual.barang-saya', $data);
     }
 
     /**
@@ -29,6 +51,7 @@ class PenjualPembeliController extends Controller
      */
     public function store(Request $request)
     {
+        $data['user_id'] = Auth::id();
         $data['nama_barang'] = $request->nama_barang;
         $data['kategori_barang'] = $request->kategori_barang;
         $data['harga'] = $request->harga;
@@ -42,7 +65,7 @@ class PenjualPembeliController extends Controller
 
         PenjualPembeli::create($data);
 
-        return redirect()->route('penjualpembeli.index')->with('success', 'Barang berhasil diunggah!');
+        return redirect()->route('penjualpembeli.barangsaya')->with('success', 'Barang berhasil diunggah!');
     }
 
     /**
@@ -58,7 +81,8 @@ class PenjualPembeliController extends Controller
      */
     public function edit(string $id)
     {
-        $data['dataPenjualPembeli'] = PenjualPembeli::findOrFail($id);
+        // Hanya pemilik barang yang bisa mengedit
+        $data['dataPenjualPembeli'] = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
         return view('PembeliPenjual.edit', $data);
     }
 
@@ -67,7 +91,7 @@ class PenjualPembeliController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $barang = PenjualPembeli::findOrFail($id);
+        $barang = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
 
         $barang->nama_barang = $request->nama_barang;
         $barang->kategori_barang = $request->kategori_barang;
@@ -82,7 +106,7 @@ class PenjualPembeliController extends Controller
         }
 
         $barang->save();
-        return redirect()->route('penjualpembeli.index')->with('success', 'Perubahan Data Berhasil!');
+        return redirect()->route('penjualpembeli.barangsaya')->with('success', 'Perubahan Data Berhasil!');
     }
 
     /**
@@ -90,9 +114,9 @@ class PenjualPembeliController extends Controller
      */
     public function destroy(string $id)
     {
-        $barang = PenjualPembeli::findOrFail($id);
+        $barang = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
 
         $barang->delete();
-        return redirect()->route('penjualpembeli.index')->with('success', 'Data berhasil dihapus');
+        return redirect()->route('penjualpembeli.barangsaya')->with('success', 'Data berhasil dihapus');
     }
 }

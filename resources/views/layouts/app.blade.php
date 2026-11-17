@@ -27,7 +27,8 @@
                         @endif
                         @auth
                             @if (auth()->user()->role != 'pembeli')
-                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900" href="#">Barang Saya</a>
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.barangsaya') ? 'bg-orange-100 shadow-md' : '' }}"
+                                    href="{{ route('penjualpembeli.barangsaya') }}">Barang Saya</a>
                             @endif
                             @if (auth()->user()->role != 'penjual')
                                 <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900" href="#">Riwayat Pemesanan</a>
@@ -79,7 +80,7 @@
                     <div class="hidden sm:flex items-center space-x-2">
                         @auth
                             <div class="text-right leading-tight">
-                                <div class="text-sm font-medium text-foreground">{{ auth()->user()->name }}</div>
+                                <div class="text-sm font-medium text-foreground">{{ auth()->user()->nama }}</div>
                                 <div class="text-xs text-muted-foreground">{{ str_replace('_', ' & ', ucwords(auth()->user()->role, '_')) }}</div>
                             </div>
                             <form action="{{ route('logout') }}" method="POST">
@@ -115,7 +116,7 @@
                     @endif
                     @auth
                         @if (auth()->user()->role != 'pembeli')
-                            <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="#">Barang Saya</a>
+                            <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('penjualpembeli.barangsaya') }}">Barang Saya</a>
                         @endif
                         @if (auth()->user()->role != 'penjual')
                             <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="#">Riwayat Pemesanan</a>
@@ -135,7 +136,7 @@
                 <div class="flex flex-col space-y-3 pt-4 sm:hidden">
                     @auth
                         <div class="text-sm text-foreground px-3">
-                            {{ auth()->user()->name }}
+                            {{ auth()->user()->nama }}
                             <span class="text-muted-foreground">({{ str_replace('_', ' & ', ucwords(auth()->user()->role, '_')) }})</span>
                         </div>
                         <form action="{{ route('logout') }}" method="POST">
@@ -377,5 +378,4 @@
     </footer>
     <script src="{{ asset('assets/js/bloom.js') }}"></script>
 </body>
-
-</html>
+</html> 

@@ -4,6 +4,9 @@
 
 @section('content')
     <div class="bg-background px-4 py-8 sm:py-12 lg:py-16 lg:px-8 min-h-screen">
+        @if (session('success'))
+            <div class="max-w-7xl mx-auto mb-6 rounded-md px-4 py-3 text-sm status-tersedia">{{ session('success') }}</div>
+        @endif
         <div class="text-center mx-auto mb-18 space-y-3">
             <h1
                 class="text-primary leading-tighter text-4xl font-semibold tracking-tight text-balance lg:leading-[1.1] lg:font-semibold xl:text-5xl xl:tracking-tighter">
@@ -84,6 +87,7 @@
                     <div class="text-6xl mb-4">📦</div>
                     <h3 class="text-xl font-semibold text-foreground mb-2">Belum ada barang</h3>
                     <p class="text-muted-foreground mb-4">Jadilah mahasiswa yang pertama menjual barang kuliahmu!</p>
+                    @if (!auth()->check() || auth()->user()->role != 'pembeli')
                     <a href="{{ route('penjualpembeli.create') }}"
                         class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 shadow h-9 px-4 py-2  transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -93,6 +97,7 @@
                             <path d="M12 5v14"></path>
                         </svg> Jual Barang
                     </a>
+                    @endif
                 </div>
             @endforelse
         </div>

@@ -23,11 +23,11 @@
                             @csrf
 
                             <div class="space-y-2">
-                                <label for="name" class="text-sm font-medium text-foreground">Nama Lengkap</label>
-                                <input type="text" id="name" name="name"
+                                <label for="nama" class="text-sm font-medium text-foreground">Nama Lengkap</label>
+                                <input type="text" id="nama" name="nama"
                                     class="flex h-9 w-full rounded-md border px-3 py-1 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-background border-border"
-                                    placeholder="Contoh: Muhammad Rakha" value="{{ old('name') }}" required>
-                                @error('name')
+                                    placeholder="Contoh: Muhammad Rakha" value="{{ old('nama') }}" required>
+                                @error('nama')
                                     <p class="text-sm text-destructive">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -96,7 +96,7 @@
                                 <label for="password" class="text-sm font-medium text-foreground">Password</label>
                                 <input type="password" id="password" name="password"
                                     class="flex h-9 w-full rounded-md border px-3 py-1 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-background border-border"
-                                    placeholder="Minimal 6 karakter" required>
+                                    placeholder="Minimal 8 karakter" required>
                                 @error('password')
                                     <p class="text-sm text-destructive">{{ $message }}</p>
                                 @enderror

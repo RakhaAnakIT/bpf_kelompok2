@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('pembeli_penjual', function (Blueprint $table) {
             $table->increments('pembeli_penjual_id');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('nama_barang', 100);
             $table->string('kategori_barang', 50);
             $table->unsignedInteger('harga');

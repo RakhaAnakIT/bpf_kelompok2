@@ -9,6 +9,7 @@ class PenjualPembeli extends Model
     protected $table = 'pembeli_penjual';
     protected $primaryKey = 'pembeli_penjual_id';
     protected $fillable = [
+        'user_id',
         'nama_barang',
         'kategori_barang',
         'harga',
@@ -18,4 +19,9 @@ class PenjualPembeli extends Model
         'gambar',
         'status',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

@@ -5,10 +5,8 @@ use App\Http\Controllers\PenjualPembeliController;
 use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('penjualpembeli.index');
 });
-
-Route::resource('penjualpembeli', PenjualPembeliController::class);
 
 Route::middleware('guest')->group(function () {
     Route::get('daftar', [AuthController::class, 'showRegister'])->name('register');
@@ -17,7 +15,11 @@ Route::middleware('guest')->group(function () {
     Route::post('masuk', [AuthController::class, 'login'])->name('login.store');
 });
 
-// Keluar (hanya untuk yang sudah login)
 Route::post('keluar', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
-Route::resource('penjualpembeli', PenjualPembeliController::class);
+Route::middleware(['auth', 'role:penjual,penjual_pembeli'])->group(function () {
+    Route::get('barang-saya', [PenjualPembeliController::class, 'barangSaya'])->name('penjualpembeli.barangsaya');
+    Route::resource('penjualpembeli', PenjualPembeliController::class)->except(['index', 'show']);
+});
+
+Route::resource('penjualpembeli', PenjualPembeliController::class)->only(['index', 'show']);
