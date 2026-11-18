@@ -64,14 +64,18 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Penjual langsung ke Barang Saya, yang lain ke Beranda
+            $pesan = 'Selamat datang, ' . Auth::user()->nama . '!';
+
+            // Arahkan sesuai role
+            if (Auth::user()->role == 'penjual_pembeli') {
+                return redirect()->route('penjualpembeli.index')->with('success', $pesan);
+            }
             if (Auth::user()->role == 'penjual') {
-                return redirect()->route('penjualpembeli.barangsaya')
-                    ->with('success', 'Selamat datang, ' . Auth::user()->nama . '!');
+                return redirect()->route('penjualpembeli.barangsaya')->with('success', $pesan);
             }
 
-            return redirect()->route('penjualpembeli.index')
-                ->with('success', 'Selamat datang, ' . Auth::user()->nama . '!');
+            // Pembeli (sementara ke Beranda umum, sampai halaman /pembeli dibuat)
+            return redirect()->route('beranda')->with('success', $pesan);
         }
 
         return back()->withErrors(['nim' => 'NIM atau password salah.'])->onlyInput('nim');

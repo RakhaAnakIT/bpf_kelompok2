@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\PenjualPembeli;
+use Illuminate\Support\Facades\Auth;
+
+class BerandaController extends Controller
+{
+    public function index(Request $request)
+    {
+        
+        if (Auth::check() && Auth::user()->role == 'penjual_pembeli') {
+            return redirect()->route('penjualpembeli.index');
+        }
+        if (Auth::check() && Auth::user()->role == 'penjual') {
+            return redirect()->route('penjualpembeli.barangsaya');
+        }
+
+        $query = PenjualPembeli::latest();
+
+        if ($request->q) {
+            $query->where('nama_barang', 'like', '%' . $request->q . '%');
+        }
+
+        $data['dataBarang'] = $query->get();
+        return view('Beranda.index', $data);
+    }
+
+    public function show(string $id)
+    {
+        // Penjual & Pembeli dan Penjual memakai halaman detail miliknya sendiri
+        if (Auth::check() && Auth::user()->role != 'pembeli') {
+            return redirect()->route('penjualpembeli.show', $id);
+        }
+
+        $data['dataBarang'] = PenjualPembeli::with('user')->findOrFail($id);
+        return view('Beranda.show', $data);
+    }
+}

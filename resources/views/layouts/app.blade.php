@@ -11,6 +11,16 @@
 </head>
 
 <body class="inter_7b064e0d-module__MOT0tq__className antialiased flex flex-col min-h-screen">
+    @php
+        // Halaman "Beranda" sesuai siapa yang membuka
+        if (auth()->check() && auth()->user()->role == 'penjual_pembeli') {
+            $home = route('penjualpembeli.index');
+        } elseif (auth()->check() && auth()->user()->role == 'penjual') {
+            $home = route('penjualpembeli.barangsaya');
+        } else {
+            $home = route('beranda'); // tamu & pembeli
+        }
+    @endphp
     <header
         class="sticky top-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm"
         id="site-header">
@@ -18,12 +28,12 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-8 lg:space-x-12">
                     <a class="text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors"
-                        aria-label="Beranda" href="{{ route('penjualpembeli.index') }}">MARKET<span
+                        aria-label="Beranda" href="{{ $home }}">MARKET<span
                             class="text-primary">PCR</span></a>
                     <nav class="hidden md:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
                         @if (!auth()->check() || auth()->user()->role != 'penjual')
-                            <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.index') ? 'bg-orange-100 shadow-md' : '' }}"
-                                href="{{ route('penjualpembeli.index') }}">Beranda</a>
+                            <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('beranda', 'penjualpembeli.index') ? 'bg-orange-100 shadow-md' : '' }}"
+                                href="{{ $home }}">Beranda</a>
                         @endif
                         @auth
                             @if (auth()->user()->role != 'pembeli')
@@ -37,7 +47,7 @@
                     </nav>
                 </div>
                 <div class="hidden lg:flex flex-1 max-w-md mx-8">
-                    <form class="relative w-full" action="{{ route('penjualpembeli.index') }}" method="GET">
+                    <form class="relative w-full" action="{{ $home }}" method="GET">
                         <input type="search" name="q" placeholder="Cari barang..."
                             class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
                             aria-label="Cari barang" value="{{ request('q') }}" /><svg
@@ -95,7 +105,7 @@
                 </div>
             </div>
             <div class="lg:hidden mt-4 animate-in slide-in-from-top duration-200 hidden" id="mobile-search">
-                <form class="relative" action="{{ route('penjualpembeli.index') }}" method="GET">
+                <form class="relative" action="{{ $home }}" method="GET">
                     <input name="q" placeholder="Cari barang..."
                         class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                         aria-label="Cari barang" type="search" value="{{ request('q') }}" /><svg
@@ -112,7 +122,7 @@
                 aria-label="Mobile navigation" id="mobile-menu">
                 <div class="flex flex-col space-y-3 pb-4 border-b border-gray-200">
                     @if (!auth()->check() || auth()->user()->role != 'penjual')
-                        <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('penjualpembeli.index') }}">Beranda</a>
+                        <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ $home }}">Beranda</a>
                     @endif
                     @auth
                         @if (auth()->user()->role != 'pembeli')
@@ -182,7 +192,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
                     <div class="lg:col-span-2">
                         <a class="text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors"
-                            aria-label="BloomShop Home" href="{{ route('penjualpembeli.index') }}">BLOOM<span
+                            aria-label="BloomShop Home" href="{{ $home }}">BLOOM<span
                                 class="text-primary">SHOP</span></a>
                         <p class="text-muted-foreground mb-6 max-w-sm">
                             Discover unique products that inspire your lifestyle. Quality craftsmanship meets modern
@@ -290,15 +300,15 @@
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Help Center</a>
+                                    href="{{ $home }}">Help Center</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Shipping Info</a>
+                                    href="{{ $home }}">Shipping Info</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Returns &amp; Exchanges</a>
+                                    href="{{ $home }}">Returns &amp; Exchanges</a>
                             </li>
                         </ul>
                     </div>
@@ -311,15 +321,15 @@
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Careers</a>
+                                    href="{{ $home }}">Careers</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Blog</a>
+                                    href="{{ $home }}">Blog</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Press</a>
+                                    href="{{ $home }}">Press</a>
                             </li>
                         </ul>
                     </div>
@@ -328,19 +338,19 @@
                         <ul class="space-y-3">
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Privacy Policy</a>
+                                    href="{{ $home }}">Privacy Policy</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Terms &amp; Conditions</a>
+                                    href="{{ $home }}">Terms &amp; Conditions</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Cookie Policy</a>
+                                    href="{{ $home }}">Cookie Policy</a>
                             </li>
                             <li>
                                 <a class="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
-                                    href="{{ route('penjualpembeli.index') }}">Accessibility</a>
+                                    href="{{ $home }}">Accessibility</a>
                             </li>
                         </ul>
                     </div>
