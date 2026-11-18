@@ -16,9 +16,18 @@
         if (auth()->check() && auth()->user()->role == 'penjual_pembeli') {
             $home = route('penjualpembeli.index');
         } elseif (auth()->check() && auth()->user()->role == 'penjual') {
-            $home = route('penjualpembeli.barangsaya');
+            $home = route('penjual.index');
         } else {
             $home = route('beranda'); // tamu & pembeli
+        }
+
+        // Link "Barang Saya" dan "Jual Barang" sesuai role
+        if (auth()->check() && auth()->user()->role == 'penjual') {
+            $barangSaya = route('penjual.index');
+            $jualBarang = route('penjual.create');
+        } else {
+            $barangSaya = route('penjualpembeli.barangsaya');
+            $jualBarang = route('penjualpembeli.create'); // tamu akan diarahkan ke Masuk
         }
     @endphp
     <header
@@ -37,8 +46,8 @@
                         @endif
                         @auth
                             @if (auth()->user()->role != 'pembeli')
-                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.barangsaya') ? 'bg-orange-100 shadow-md' : '' }}"
-                                    href="{{ route('penjualpembeli.barangsaya') }}">Barang Saya</a>
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.barangsaya', 'penjual.*') ? 'bg-orange-100 shadow-md' : '' }}"
+                                    href="{{ $barangSaya }}">Barang Saya</a>
                             @endif
                             @if (auth()->user()->role != 'penjual')
                                 <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900" href="#">Riwayat Pemesanan</a>
@@ -76,7 +85,7 @@
                             <path d="M18 6 6 18"></path>
                             <path d="m6 6 12 12"></path>
                         </svg></button>@if (!auth()->check() || auth()->user()->role != 'pembeli')
-                    <a href="{{ route('penjualpembeli.create') }}"
+                    <a href="{{ $jualBarang }}"
                         class="hidden sm:inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -126,7 +135,7 @@
                     @endif
                     @auth
                         @if (auth()->user()->role != 'pembeli')
-                            <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('penjualpembeli.barangsaya') }}">Barang Saya</a>
+                            <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ $barangSaya }}">Barang Saya</a>
                         @endif
                         @if (auth()->user()->role != 'penjual')
                             <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="#">Riwayat Pemesanan</a>
@@ -134,7 +143,7 @@
                     @endauth
                     @if (!auth()->check() || auth()->user()->role != 'pembeli')
                         <a class="inline-flex items-center justify-center gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm"
-                        href="{{ route('penjualpembeli.create') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                        href="{{ $jualBarang }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
                             height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus h-4 w-4"
                             aria-hidden="true">

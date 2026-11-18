@@ -14,9 +14,6 @@ class PenjualPembeliController extends Controller
      */
     public function index(Request $request)
     {
-        if (Auth::check() && Auth::user()->role == 'penjual') {
-            return redirect()->route('penjualpembeli.barangsaya');
-        }
 
         $query = PenjualPembeli::latest();
 

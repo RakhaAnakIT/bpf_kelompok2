@@ -39,18 +39,11 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Pendaftaran berhasil, silakan masuk.');
     }
 
-    /**
-     * Tampilkan form Masuk.
-     */
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    /**
-     * Proses Masuk dengan NIM dan Password.
-     * Role dan prodi otomatis terbaca dari database.
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -71,7 +64,7 @@ class AuthController extends Controller
                 return redirect()->route('penjualpembeli.index')->with('success', $pesan);
             }
             if (Auth::user()->role == 'penjual') {
-                return redirect()->route('penjualpembeli.barangsaya')->with('success', $pesan);
+                return redirect()->route('penjual.index')->with('success', $pesan);
             }
 
             // Pembeli (sementara ke Beranda umum, sampai halaman /pembeli dibuat)
@@ -81,9 +74,6 @@ class AuthController extends Controller
         return back()->withErrors(['nim' => 'NIM atau password salah.'])->onlyInput('nim');
     }
 
-    /**
-     * Keluar.
-     */
     public function logout(Request $request)
     {
         Auth::logout();
