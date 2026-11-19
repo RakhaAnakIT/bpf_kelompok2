@@ -17,8 +17,10 @@
             $home = route('penjualpembeli.index');
         } elseif (auth()->check() && auth()->user()->role == 'penjual') {
             $home = route('penjual.index');
+        } elseif (auth()->check() && auth()->user()->role == 'pembeli') {
+            $home = route('pembeli.index');
         } else {
-            $home = route('beranda'); // tamu & pembeli
+            $home = route('beranda'); // tamu
         }
 
         // Link "Barang Saya" dan "Jual Barang" sesuai role
@@ -41,7 +43,7 @@
                             class="text-primary">PCR</span></a>
                     <nav class="hidden md:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
                         @if (!auth()->check() || auth()->user()->role != 'penjual')
-                            <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('beranda', 'penjualpembeli.index') ? 'bg-orange-100 shadow-md' : '' }}"
+                            <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('beranda', 'penjualpembeli.index', 'pembeli.*') ? 'bg-orange-100 shadow-md' : '' }}"
                                 href="{{ $home }}">Beranda</a>
                         @endif
                         @auth
@@ -49,9 +51,7 @@
                                 <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.barangsaya', 'penjual.*') ? 'bg-orange-100 shadow-md' : '' }}"
                                     href="{{ $barangSaya }}">Barang Saya</a>
                             @endif
-                            @if (auth()->user()->role != 'penjual')
-                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900" href="#">Riwayat Pemesanan</a>
-                            @endif
+                            {{-- Menu Riwayat Pemesanan ditampilkan lagi setelah fitur pesanan dibuat --}}
                         @endauth
                     </nav>
                 </div>
@@ -137,9 +137,7 @@
                         @if (auth()->user()->role != 'pembeli')
                             <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ $barangSaya }}">Barang Saya</a>
                         @endif
-                        @if (auth()->user()->role != 'penjual')
-                            <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="#">Riwayat Pemesanan</a>
-                        @endif
+                        {{-- Menu Riwayat Pemesanan ditampilkan lagi setelah fitur pesanan dibuat --}}
                     @endauth
                     @if (!auth()->check() || auth()->user()->role != 'pembeli')
                         <a class="inline-flex items-center justify-center gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm"

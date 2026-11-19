@@ -67,8 +67,8 @@ class AuthController extends Controller
                 return redirect()->route('penjual.index')->with('success', $pesan);
             }
 
-            // Pembeli (sementara ke Beranda umum, sampai halaman /pembeli dibuat)
-            return redirect()->route('beranda')->with('success', $pesan);
+            // Pembeli
+            return redirect()->route('pembeli.index')->with('success', $pesan);
         }
 
         return back()->withErrors(['nim' => 'NIM atau password salah.'])->onlyInput('nim');

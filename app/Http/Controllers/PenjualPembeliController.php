@@ -70,7 +70,7 @@ class PenjualPembeliController extends Controller
      */
     public function show(string $id)
     {
-        $data['dataPenjualPembeli'] = PenjualPembeli::with('user')->findOrFail($id);
+        $data['dataPenjualPembeli'] = PenjualPembeli::with('user.ratingPenjual')->findOrFail($id);
         return view('PembeliPenjual.show', $data);
     }
 

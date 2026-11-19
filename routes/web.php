@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\PenjualPembeliController;
 use App\Http\Controllers\PenjualController;
+use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\AuthController;
 
 // Beranda umum (tamu): halaman pertama saat website dibuka
@@ -34,4 +35,9 @@ Route::middleware(['auth', 'role:penjual_pembeli'])->group(function () {
 // Penjual
 Route::middleware(['auth', 'role:penjual'])->group(function () {
     Route::resource('penjual', PenjualController::class);
+});
+
+// Pembeli
+Route::middleware(['auth', 'role:pembeli'])->group(function () {
+    Route::resource('pembeli', PembeliController::class)->only(['index', 'show']);
 });

@@ -74,7 +74,14 @@
                     <div>
                         <div class="text-sm text-muted-foreground">Penjual</div>
                         <div class="font-medium text-foreground">
-                            {{ $dataPenjualPembeli->user->nama }} &bull; {{ $dataPenjualPembeli->user->prodi }}
+                            {{ $dataPenjualPembeli->user->nama }} &bull; {{ $dataPenjualPembeli->user->prodi }} &bull;
+                            @if ($dataPenjualPembeli->user->ratingPenjual->count() > 0)
+                                <span class="text-primary">&#9733;</span>
+                                {{ number_format($dataPenjualPembeli->user->ratingPenjual->avg('bintang'), 1) }}
+                                <span class="text-muted-foreground">({{ $dataPenjualPembeli->user->ratingPenjual->count() }})</span>
+                            @else
+                                <span class="text-muted-foreground">Belum ada rating</span>
+                            @endif
                         </div>
                     </div>
                 </div>

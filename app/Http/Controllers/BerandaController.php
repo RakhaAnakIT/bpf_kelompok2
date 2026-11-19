@@ -17,6 +17,9 @@ class BerandaController extends Controller
         if (Auth::check() && Auth::user()->role == 'penjual') {
             return redirect()->route('penjual.index');
         }
+        if (Auth::check() && Auth::user()->role == 'pembeli') {
+            return redirect()->route('pembeli.index');
+        }
 
         $query = PenjualPembeli::latest();
 
@@ -34,6 +37,9 @@ class BerandaController extends Controller
         if (Auth::check() && Auth::user()->role == 'penjual_pembeli') {
             return redirect()->route('penjualpembeli.show', $id);
         }
+        if (Auth::check() && Auth::user()->role == 'pembeli') {
+            return redirect()->route('pembeli.show', $id);
+        }
         if (Auth::check() && Auth::user()->role == 'penjual') {
             // Penjual hanya boleh melihat barang miliknya sendiri
             $milikSendiri = PenjualPembeli::where('user_id', Auth::id())->find($id);
@@ -43,7 +49,7 @@ class BerandaController extends Controller
             return redirect()->route('penjual.index');
         }
 
-        $data['dataBarang'] = PenjualPembeli::with('user')->findOrFail($id);
+        $data['dataBarang'] = PenjualPembeli::with('user.ratingPenjual')->findOrFail($id);
         return view('Beranda.show', $data);
     }
 }

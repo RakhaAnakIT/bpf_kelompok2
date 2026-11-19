@@ -28,4 +28,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Rating yang diterima user ini sebagai penjual.
+     */
+    public function ratingPenjual()
+    {
+        return $this->hasMany(Rating::class, 'penerima_id', 'id')->where('peran_penerima', 'penjual');
+    }
+
+    /**
+     * Rating yang diterima user ini sebagai pembeli.
+     */
+    public function ratingPembeli()
+    {
+        return $this->hasMany(Rating::class, 'penerima_id', 'id')->where('peran_penerima', 'pembeli');
+    }
 }

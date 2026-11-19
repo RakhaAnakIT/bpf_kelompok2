@@ -53,7 +53,7 @@ class PenjualController extends Controller
      */
     public function show(string $id)
     {
-        $data['dataPenjualPembeli'] = PenjualPembeli::with('user')->where('user_id', Auth::id())->findOrFail($id);
+        $data['dataPenjualPembeli'] = PenjualPembeli::with('user.ratingPenjual')->where('user_id', Auth::id())->findOrFail($id);
         return view('Penjual.show', $data);
     }
 
