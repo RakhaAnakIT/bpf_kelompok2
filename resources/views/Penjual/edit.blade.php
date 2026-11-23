@@ -80,16 +80,6 @@
                                 </div>
                             </div>
 
-                            <div class="space-y-2">
-                                <label for="status" class="text-sm font-medium text-foreground">Status Barang</label>
-                                <select id="status" name="status"
-                                    class="flex h-9 w-full rounded-md border px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-background border-border"
-                                    required>
-                                    <option value="tersedia" {{ old('status', $dataPenjualPembeli->status) == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
-                                    <option value="dipesan" {{ old('status', $dataPenjualPembeli->status) == 'dipesan' ? 'selected' : '' }}>Dipesan</option>
-                                    <option value="terjual" {{ old('status', $dataPenjualPembeli->status) == 'terjual' ? 'selected' : '' }}>Terjual</option>
-                                </select>
-                            </div>
 
                             <div class="space-y-2">
                                 <label for="deskripsi" class="text-sm font-medium text-foreground">Deskripsi</label>

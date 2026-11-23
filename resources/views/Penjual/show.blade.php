@@ -10,6 +10,9 @@
         @if (session('success'))
             <div class="mb-6 rounded-md px-4 py-3 text-sm status-tersedia">{{ session('success') }}</div>
         @endif
+        @if (session('error'))
+            <div class="mb-6 rounded-md px-4 py-3 text-sm kotak-error">{{ session('error') }}</div>
+        @endif
 
         
         <nav class="mb-8">
@@ -89,7 +92,13 @@
                 <div class="shrink-0 bg-border h-[1px] w-full"></div>
 
                 {{-- Tombol aksi: Edit & Hapus --}}
-                <div class="flex flex-col sm:flex-row gap-4">
+                @if ($dataPenjualPembeli->status == 'dipesan')
+                    <div class="rounded-md px-4 py-3 text-sm status-menunggu">
+                        Barang ini sedang dipesan. Edit dan hapus dikunci sampai pesanan selesai atau dibatalkan.
+                        <a href="{{ route('pesanan.penjualan') }}" class="font-medium underline">Lihat Pesanan Masuk</a>
+                    </div>
+                @else
+                    <div class="flex flex-col sm:flex-row gap-4">
                         <a href="{{ route('penjual.edit', $dataPenjualPembeli->pembeli_penjual_id) }}" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 shadow h-10 rounded-md px-8 flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil h-4 w-4" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg> Edit Barang
                         </a>
@@ -102,6 +111,7 @@
                             </button>
                         </form>
                 </div>
+                @endif
             </div>
         </div>
     </div>

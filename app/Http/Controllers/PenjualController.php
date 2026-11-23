@@ -62,7 +62,14 @@ class PenjualController extends Controller
      */
     public function edit(string $id)
     {
-        $data['dataPenjualPembeli'] = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
+        $barang = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
+
+        // Barang yang sedang dipesan tidak boleh diubah/dihapus
+        if ($barang->status == 'dipesan') {
+            return redirect()->route('penjual.show', $id)->with('error', 'Barang sedang dipesan, tidak bisa diubah atau dihapus sampai pesanan selesai atau dibatalkan.');
+        }
+
+        $data['dataPenjualPembeli'] = $barang;
         return view('Penjual.edit', $data);
     }
 
@@ -73,13 +80,17 @@ class PenjualController extends Controller
     {
         $barang = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
 
+        // Barang yang sedang dipesan tidak boleh diubah/dihapus
+        if ($barang->status == 'dipesan') {
+            return redirect()->route('penjual.show', $id)->with('error', 'Barang sedang dipesan, tidak bisa diubah atau dihapus sampai pesanan selesai atau dibatalkan.');
+        }
+
         $barang->nama_barang = $request->nama_barang;
         $barang->kategori_barang = $request->kategori_barang;
         $barang->harga = $request->harga;
         $barang->kondisi = $request->kondisi;
         $barang->lokasi = $request->lokasi;
         $barang->deskripsi = $request->deskripsi;
-        $barang->status = $request->status;
 
         if ($request->hasFile('gambar')) {
             if ($barang->gambar) {
@@ -95,6 +106,11 @@ class PenjualController extends Controller
     public function destroy(string $id)
     {
         $barang = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
+
+        // Barang yang sedang dipesan tidak boleh diubah/dihapus
+        if ($barang->status == 'dipesan') {
+            return redirect()->route('penjual.show', $id)->with('error', 'Barang sedang dipesan, tidak bisa diubah atau dihapus sampai pesanan selesai atau dibatalkan.');
+        }
 
         if ($barang->gambar) {
             Storage::disk('public')->delete($barang->gambar);

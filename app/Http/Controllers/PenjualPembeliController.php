@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PenjualPembeli;
+use App\Models\Pesanan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -71,6 +72,13 @@ class PenjualPembeliController extends Controller
     public function show(string $id)
     {
         $data['dataPenjualPembeli'] = PenjualPembeli::with('user.ratingPenjual')->findOrFail($id);
+
+        // Apakah user ini sedang memesan barang ini?
+        $data['pesananSaya'] = Pesanan::where('barang_id', $id)
+            ->where('pembeli_id', Auth::id())
+            ->whereIn('status', ['menunggu', 'dijadwalkan'])
+            ->first();
+
         return view('PembeliPenjual.show', $data);
     }
 
@@ -79,7 +87,14 @@ class PenjualPembeliController extends Controller
      */
     public function edit(string $id)
     {
-        $data['dataPenjualPembeli'] = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
+        $barang = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
+
+        // Barang yang sedang dipesan tidak boleh diubah/dihapus
+        if ($barang->status == 'dipesan') {
+            return redirect()->route('penjualpembeli.show', $id)->with('error', 'Barang sedang dipesan, tidak bisa diubah atau dihapus sampai pesanan selesai atau dibatalkan.');
+        }
+
+        $data['dataPenjualPembeli'] = $barang;
         return view('PembeliPenjual.edit', $data);
     }
 
@@ -90,13 +105,17 @@ class PenjualPembeliController extends Controller
     {
         $barang = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
 
+        // Barang yang sedang dipesan tidak boleh diubah/dihapus
+        if ($barang->status == 'dipesan') {
+            return redirect()->route('penjualpembeli.show', $id)->with('error', 'Barang sedang dipesan, tidak bisa diubah atau dihapus sampai pesanan selesai atau dibatalkan.');
+        }
+
         $barang->nama_barang = $request->nama_barang;
         $barang->kategori_barang = $request->kategori_barang;
         $barang->harga = $request->harga;
         $barang->kondisi = $request->kondisi;
         $barang->lokasi = $request->lokasi;
         $barang->deskripsi = $request->deskripsi;
-        $barang->status = $request->status;
 
         if ($request->hasFile('gambar')) {
             if ($barang->gambar) {
@@ -112,6 +131,11 @@ class PenjualPembeliController extends Controller
     public function destroy(string $id)
     {
         $barang = PenjualPembeli::where('user_id', Auth::id())->findOrFail($id);
+
+        // Barang yang sedang dipesan tidak boleh diubah/dihapus
+        if ($barang->status == 'dipesan') {
+            return redirect()->route('penjualpembeli.show', $id)->with('error', 'Barang sedang dipesan, tidak bisa diubah atau dihapus sampai pesanan selesai atau dibatalkan.');
+        }
 
         if ($barang->gambar) {
             Storage::disk('public')->delete($barang->gambar);

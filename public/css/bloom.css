@@ -2286,3 +2286,44 @@
   background-color: #e5e7eb;
   color: #4b5563;
 }
+
+/* ===== Tambahan: Pesanan ===== */
+.status-menunggu {
+  background-color: #fef9c3;
+  color: #a16207;
+}
+.status-dijadwalkan {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+.status-selesai {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+.status-ditolak,
+.status-dibatalkan,
+.kotak-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+.badge-angka {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: 4px;
+  border-radius: 9999px;
+  background-color: #ef4444;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.tombol-wa {
+  background-color: #25d366;
+  color: #fff;
+}
+.tombol-wa:hover {
+  background-color: #1ebe5b;
+}

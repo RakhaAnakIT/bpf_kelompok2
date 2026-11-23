@@ -31,6 +31,12 @@
             $barangSaya = route('penjualpembeli.barangsaya');
             $jualBarang = route('penjualpembeli.create'); // tamu akan diarahkan ke Masuk
         }
+
+        // Jumlah pesanan baru yang menunggu diterima (untuk penjual)
+        $pesananBaru = 0;
+        if (auth()->check() && in_array(auth()->user()->role, ['penjual', 'penjual_pembeli'])) {
+            $pesananBaru = \App\Models\Pesanan::where('penjual_id', auth()->id())->where('status', 'menunggu')->count();
+        }
     @endphp
     <header
         class="sticky top-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm"
@@ -51,7 +57,16 @@
                                 <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.barangsaya', 'penjual.*') ? 'bg-orange-100 shadow-md' : '' }}"
                                     href="{{ $barangSaya }}">Barang Saya</a>
                             @endif
-                            {{-- Menu Riwayat Pemesanan ditampilkan lagi setelah fitur pesanan dibuat --}}
+                            @if (in_array(auth()->user()->role, ['pembeli', 'penjual_pembeli']))
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('pesanan.pembelian') ? 'bg-orange-100 shadow-md' : '' }}"
+                                    href="{{ route('pesanan.pembelian') }}">Pesanan Saya</a>
+                            @endif
+                            @if (in_array(auth()->user()->role, ['penjual', 'penjual_pembeli']))
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('pesanan.penjualan') ? 'bg-orange-100 shadow-md' : '' }}"
+                                    href="{{ route('pesanan.penjualan') }}">Pesanan Masuk
+                                    @if ($pesananBaru > 0)<span class="badge-angka">{{ $pesananBaru }}</span>@endif
+                                </a>
+                            @endif
                         @endauth
                     </nav>
                 </div>
@@ -137,7 +152,14 @@
                         @if (auth()->user()->role != 'pembeli')
                             <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ $barangSaya }}">Barang Saya</a>
                         @endif
-                        {{-- Menu Riwayat Pemesanan ditampilkan lagi setelah fitur pesanan dibuat --}}
+                        @if (in_array(auth()->user()->role, ['pembeli', 'penjual_pembeli']))
+                            <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('pesanan.pembelian') }}">Pesanan Saya</a>
+                        @endif
+                        @if (in_array(auth()->user()->role, ['penjual', 'penjual_pembeli']))
+                            <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('pesanan.penjualan') }}">Pesanan Masuk
+                                @if ($pesananBaru > 0)<span class="badge-angka">{{ $pesananBaru }}</span>@endif
+                            </a>
+                        @endif
                     @endauth
                     @if (!auth()->check() || auth()->user()->role != 'pembeli')
                         <a class="inline-flex items-center justify-center gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm"

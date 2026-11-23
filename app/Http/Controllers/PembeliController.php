@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PenjualPembeli;
+use App\Models\Pesanan;
+use Illuminate\Support\Facades\Auth;
 
 class PembeliController extends Controller
 {
@@ -29,6 +31,13 @@ class PembeliController extends Controller
     public function show(string $id)
     {
         $data['dataBarang'] = PenjualPembeli::with('user.ratingPenjual')->findOrFail($id);
+
+        // Apakah user ini sedang memesan barang ini?
+        $data['pesananSaya'] = Pesanan::where('barang_id', $id)
+            ->where('pembeli_id', Auth::id())
+            ->whereIn('status', ['menunggu', 'dijadwalkan'])
+            ->first();
+
         return view('Pembeli.show', $data);
     }
 }

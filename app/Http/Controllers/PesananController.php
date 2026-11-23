@@ -1,0 +1,196 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Pesanan;
+use App\Models\PenjualPembeli;
+use Illuminate\Support\Facades\Auth;
+
+class PesananController extends Controller
+{
+    /**
+     * Halaman Konfirmasi Pesanan (diisi pembeli sebelum memesan).
+     */
+    public function create(string $id)
+    {
+        $barang = PenjualPembeli::with('user')->findOrFail($id);
+
+        if ($barang->user_id == Auth::id()) {
+            return back()->with('error', 'Kamu tidak bisa memesan barang milikmu sendiri.');
+        }
+        if ($barang->status != 'tersedia') {
+            return back()->with('error', 'Barang ini sudah ' . $barang->status . '.');
+        }
+
+        $data['dataBarang'] = $barang;
+        return view('Pesanan.create', $data);
+    }
+
+    /**
+     * Simpan pesanan + kunci barang (status barang otomatis menjadi "dipesan").
+     */
+    public function store(Request $request, string $id)
+    {
+        $request->validate([
+            'lokasi_ketemu' => 'required|max:100',
+            'waktu_ketemu'  => 'required|date|after:now',
+            'cara_bayar'    => 'required|in:tunai,transfer,ewallet',
+            'catatan'       => 'nullable|max:300',
+        ], [
+            'waktu_ketemu.after' => 'Waktu bertemu harus setelah waktu sekarang.',
+        ]);
+
+        $barang = PenjualPembeli::findOrFail($id);
+
+        // Kunci barang: hanya berhasil kalau barang masih "tersedia" dan bukan milik sendiri.
+        // Kalau ada 2 pembeli memesan bersamaan, hanya 1 yang berhasil.
+        $terkunci = PenjualPembeli::where('pembeli_penjual_id', $id)
+            ->where('status', 'tersedia')
+            ->where('user_id', '!=', Auth::id())
+            ->update(['status' => 'dipesan']);
+
+        if (!$terkunci) {
+            return redirect()->route('pesanan.pembelian')->with('error', 'Maaf, barang ini sudah dipesan orang lain atau tidak bisa dipesan.');
+        }
+
+        $data['barang_id']     = $barang->pembeli_penjual_id;
+        $data['pembeli_id']    = Auth::id();
+        $data['penjual_id']    = $barang->user_id;
+        $data['harga']         = $barang->harga;
+        $data['lokasi_ketemu'] = $request->lokasi_ketemu;
+        $data['waktu_ketemu']  = $request->waktu_ketemu;
+        $data['cara_bayar']    = $request->cara_bayar;
+        $data['catatan']       = $request->catatan;
+
+        Pesanan::create($data);
+
+        return redirect()->route('pesanan.pembelian')->with('success', 'Pesanan terkirim! Tunggu penjual menerima pesananmu.');
+    }
+
+    /**
+     * Pesanan Saya: barang yang dipesan user ini (sebagai pembeli).
+     */
+    public function pembelian()
+    {
+        $data['dataPesanan'] = Pesanan::with('barang', 'penjual')->where('pembeli_id', Auth::id())->latest()->get();
+        return view('Pesanan.pembelian', $data);
+    }
+
+    /**
+     * Pesanan Masuk: pesanan untuk barang milik user ini (sebagai penjual).
+     */
+    public function penjualan()
+    {
+        $data['dataPesanan'] = Pesanan::with('barang', 'pembeli')->where('penjual_id', Auth::id())->latest()->get();
+        return view('Pesanan.penjualan', $data);
+    }
+
+    /**
+     * Penjual menerima pesanan.
+     */
+    public function terima(string $id)
+    {
+        $pesanan = Pesanan::where('penjual_id', Auth::id())->where('status', 'menunggu')->findOrFail($id);
+
+        $pesanan->status = 'dijadwalkan';
+        $pesanan->save();
+
+        return back()->with('success', 'Pesanan diterima. Silakan hubungi pembeli untuk memastikan jadwal bertemu.');
+    }
+
+    /**
+     * Penjual menolak pesanan -> barang kembali tersedia.
+     */
+    public function tolak(string $id)
+    {
+        $pesanan = Pesanan::where('penjual_id', Auth::id())->where('status', 'menunggu')->findOrFail($id);
+
+        $pesanan->status = 'ditolak';
+        $pesanan->save();
+
+        $this->ubahStatusBarang($pesanan->barang_id, 'tersedia');
+
+        return back()->with('success', 'Pesanan ditolak. Barang kembali tersedia.');
+    }
+
+    /**
+     * Pembeli atau penjual membatalkan pesanan (alasan wajib) -> barang kembali tersedia.
+     */
+    public function batal(Request $request, string $id)
+    {
+        $request->validate([
+            'alasan_batal' => 'required|max:255',
+        ], [
+            'alasan_batal.required' => 'Alasan pembatalan wajib diisi.',
+        ]);
+
+        $pesanan = $this->pesananMilikSaya($id);
+
+        if (!in_array($pesanan->status, ['menunggu', 'dijadwalkan'])) {
+            return back()->with('error', 'Pesanan ini sudah tidak bisa dibatalkan.');
+        }
+
+        $pesanan->status          = 'dibatalkan';
+        $pesanan->alasan_batal    = $request->alasan_batal;
+        $pesanan->dibatalkan_oleh = Auth::id();
+        $pesanan->save();
+
+        $this->ubahStatusBarang($pesanan->barang_id, 'tersedia');
+
+        return back()->with('success', 'Pesanan dibatalkan. Barang kembali tersedia.');
+    }
+
+    /**
+     * Konfirmasi "Transaksi Selesai". Kalau pembeli DAN penjual sudah konfirmasi,
+     * pesanan selesai dan barang otomatis "terjual".
+     */
+    public function selesai(string $id)
+    {
+        $pesanan = $this->pesananMilikSaya($id);
+
+        if ($pesanan->status != 'dijadwalkan') {
+            return back()->with('error', 'Pesanan ini belum bisa diselesaikan.');
+        }
+
+        if ($pesanan->pembeli_id == Auth::id()) {
+            $pesanan->selesai_pembeli = true;
+        } else {
+            $pesanan->selesai_penjual = true;
+        }
+
+        if ($pesanan->selesai_pembeli && $pesanan->selesai_penjual) {
+            $pesanan->status = 'selesai';
+            $this->ubahStatusBarang($pesanan->barang_id, 'terjual');
+            $pesan = 'Transaksi selesai! Barang sudah terjual.';
+        } else {
+            $pesan = 'Konfirmasimu tersimpan. Menunggu konfirmasi dari pihak lain.';
+        }
+
+        $pesanan->save();
+
+        return back()->with('success', $pesan);
+    }
+
+    /**
+     * Ambil pesanan di mana user ini adalah pembeli atau penjualnya.
+     */
+    private function pesananMilikSaya(string $id)
+    {
+        return Pesanan::where(function ($query) {
+            $query->where('pembeli_id', Auth::id())->orWhere('penjual_id', Auth::id());
+        })->findOrFail($id);
+    }
+
+    /**
+     * Ubah status barang (dipakai otomatis oleh sistem).
+     */
+    private function ubahStatusBarang($barangId, $status)
+    {
+        $barang = PenjualPembeli::find($barangId);
+        if ($barang) {
+            $barang->status = $status;
+            $barang->save();
+        }
+    }
+}

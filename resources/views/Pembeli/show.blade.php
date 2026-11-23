@@ -10,6 +10,9 @@
         @if (session('success'))
             <div class="mb-6 rounded-md px-4 py-3 text-sm status-tersedia">{{ session('success') }}</div>
         @endif
+        @if (session('error'))
+            <div class="mb-6 rounded-md px-4 py-3 text-sm kotak-error">{{ session('error') }}</div>
+        @endif
 
         <nav class="mb-8">
             <a href="{{ route('pembeli.index') }}"
@@ -102,21 +105,15 @@
 
                 
                     @if ($dataBarang->status == 'tersedia')
-                        <button type="button"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 shadow h-10 rounded-md px-8 flex-1 bg-primary text-primary-foreground hover:bg-primary/90 w-full"
-                            disabled>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="lucide lucide-shopping-bag h-4 w-4" aria-hidden="true">
-                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
-                                <path d="M3 6h18"></path>
-                                <path d="M16 10a4 4 0 0 1-8 0"></path>
-                            </svg> Pesan Barang (segera hadir)
-                        </button>
+                        <a href="{{ route('pesanan.create', $dataBarang->pembeli_penjual_id) }}" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 shadow h-10 rounded-md px-8 flex-1 bg-primary text-primary-foreground hover:bg-primary/90 w-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-bag h-4 w-4" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg> Pesan Barang
+                        </a>
+                    @elseif ($pesananSaya)
+                        <a href="{{ route('pesanan.pembelian') }}" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 shadow h-10 rounded-md px-8 flex-1 border border-input bg-background hover:bg-accent hover:text-accent-foreground w-full">
+                            Kamu sudah memesan barang ini &mdash; lihat Pesanan Saya
+                        </a>
                     @else
-                        <button type="button"
-                            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 shadow h-10 rounded-md px-8 flex-1 border border-input bg-background hover:bg-accent hover:text-accent-foreground w-full"
-                            disabled>
+                        <button type="button" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 shadow h-10 rounded-md px-8 flex-1 border border-input bg-background hover:bg-accent hover:text-accent-foreground w-full" disabled>
                             Barang sudah {{ $dataBarang->status }}
                         </button>
                     @endif

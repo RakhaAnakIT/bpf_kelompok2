@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['nama', 'nim', 'prodi', 'role', 'password'])]
+#[Fillable(['nama', 'nim', 'prodi', 'no_hp', 'role', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -43,5 +43,13 @@ class User extends Authenticatable
     public function ratingPembeli()
     {
         return $this->hasMany(Rating::class, 'penerima_id', 'id')->where('peran_penerima', 'pembeli');
+    }
+
+    /**
+     * Link chat WhatsApp ke user ini, dengan pesan yang sudah terisi.
+     */
+    public function linkWhatsapp($pesan)
+    {
+        return 'https://wa.me/' . $this->no_hp . '?text=' . urlencode($pesan);
     }
 }

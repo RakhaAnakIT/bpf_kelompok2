@@ -43,6 +43,16 @@
                             </div>
 
                             <div class="space-y-2">
+                                <label for="no_hp" class="text-sm font-medium text-foreground">No WhatsApp</label>
+                                <input type="tel" id="no_hp" name="no_hp"
+                                    class="flex h-9 w-full rounded-md border px-3 py-1 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-background border-border"
+                                    placeholder="Contoh: 081234567890" value="{{ old('no_hp') }}" required>
+                                @error('no_hp')
+                                    <p class="text-sm text-destructive">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="space-y-2">
                                 <label for="prodi" class="text-sm font-medium text-foreground">Program Studi</label>
                                 <select id="prodi" name="prodi"
                                     class="flex h-9 w-full rounded-md border px-3 py-1 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-background border-border"
