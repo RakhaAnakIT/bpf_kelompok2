@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pesanan;
 use App\Models\PenjualPembeli;
+use App\Models\Notifikasi;
 use Illuminate\Support\Facades\Auth;
 
 class PesananController extends Controller
@@ -65,6 +66,14 @@ class PesananController extends Controller
 
         Pesanan::create($data);
 
+        // Notifikasi ke penjual
+        Notifikasi::kirim(
+            $barang->user_id,
+            'Pesanan baru',
+            Auth::user()->nama . ' memesan "' . $barang->nama_barang . '". Segera terima atau tolak pesanan ini.',
+            route('pesanan.penjualan')
+        );
+
         return redirect()->route('pesanan.pembelian')->with('success', 'Pesanan terkirim! Tunggu penjual menerima pesananmu.');
     }
 
@@ -96,6 +105,14 @@ class PesananController extends Controller
         $pesanan->status = 'dijadwalkan';
         $pesanan->save();
 
+        // Notifikasi ke pembeli
+        Notifikasi::kirim(
+            $pesanan->pembeli_id,
+            'Pesanan diterima',
+            Auth::user()->nama . ' menerima pesananmu untuk "' . $pesanan->barang->nama_barang . '". Hubungi penjual via WhatsApp untuk memastikan jadwal bertemu.',
+            route('pesanan.pembelian')
+        );
+
         return back()->with('success', 'Pesanan diterima. Silakan hubungi pembeli untuk memastikan jadwal bertemu.');
     }
 
@@ -108,6 +125,14 @@ class PesananController extends Controller
 
         $pesanan->status = 'ditolak';
         $pesanan->save();
+
+        // Notifikasi ke pembeli
+        Notifikasi::kirim(
+            $pesanan->pembeli_id,
+            'Pesanan ditolak',
+            Auth::user()->nama . ' menolak pesananmu untuk "' . $pesanan->barang->nama_barang . '".',
+            route('pesanan.pembelian')
+        );
 
         $this->ubahStatusBarang($pesanan->barang_id, 'tersedia');
 
@@ -136,6 +161,13 @@ class PesananController extends Controller
         $pesanan->dibatalkan_oleh = Auth::id();
         $pesanan->save();
 
+        // Notifikasi ke pihak lainnya
+        $this->kirimKePihakLain(
+            $pesanan,
+            'Pesanan dibatalkan',
+            Auth::user()->nama . ' membatalkan pesanan "' . $pesanan->barang->nama_barang . '". Alasan: ' . $request->alasan_batal
+        );
+
         $this->ubahStatusBarang($pesanan->barang_id, 'tersedia');
 
         return back()->with('success', 'Pesanan dibatalkan. Barang kembali tersedia.');
@@ -163,8 +195,19 @@ class PesananController extends Controller
             $pesanan->status = 'selesai';
             $this->ubahStatusBarang($pesanan->barang_id, 'terjual');
             $pesan = 'Transaksi selesai! Barang sudah terjual.';
+
+            // Notifikasi ke kedua pihak
+            Notifikasi::kirim($pesanan->pembeli_id, 'Transaksi selesai', 'Transaksi "' . $pesanan->barang->nama_barang . '" sudah selesai. Terima kasih!', route('pesanan.pembelian'));
+            Notifikasi::kirim($pesanan->penjual_id, 'Transaksi selesai', 'Transaksi "' . $pesanan->barang->nama_barang . '" sudah selesai. Barang tercatat terjual.', route('pesanan.penjualan'));
         } else {
             $pesan = 'Konfirmasimu tersimpan. Menunggu konfirmasi dari pihak lain.';
+
+            // Notifikasi ke pihak lainnya
+            $this->kirimKePihakLain(
+                $pesanan,
+                'Menunggu konfirmasimu',
+                Auth::user()->nama . ' sudah mengonfirmasi transaksi "' . $pesanan->barang->nama_barang . '" selesai. Konfirmasi juga kalau sudah beres.'
+            );
         }
 
         $pesanan->save();
@@ -180,6 +223,18 @@ class PesananController extends Controller
         return Pesanan::where(function ($query) {
             $query->where('pembeli_id', Auth::id())->orWhere('penjual_id', Auth::id());
         })->findOrFail($id);
+    }
+
+    /**
+     * Kirim notifikasi ke pihak lain dari pesanan (kalau saya pembeli -> ke penjual, dan sebaliknya).
+     */
+    private function kirimKePihakLain($pesanan, $judul, $pesan)
+    {
+        if ($pesanan->pembeli_id == Auth::id()) {
+            Notifikasi::kirim($pesanan->penjual_id, $judul, $pesan, route('pesanan.penjualan'));
+        } else {
+            Notifikasi::kirim($pesanan->pembeli_id, $judul, $pesan, route('pesanan.pembelian'));
+        }
     }
 
     /**

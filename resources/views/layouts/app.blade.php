@@ -32,6 +32,12 @@
             $jualBarang = route('penjualpembeli.create'); // tamu akan diarahkan ke Masuk
         }
 
+        // Jumlah notifikasi yang belum dibaca
+        $notifBaru = 0;
+        if (auth()->check()) {
+            $notifBaru = \App\Models\Notifikasi::where('user_id', auth()->id())->whereNull('dibaca_pada')->count();
+        }
+
         // Jumlah pesanan baru yang menunggu diterima (untuk penjual)
         $pesananBaru = 0;
         if (auth()->check() && in_array(auth()->user()->role, ['penjual', 'penjual_pembeli'])) {
@@ -111,6 +117,13 @@
                         Jual Barang
                     </a>
                     @endif
+                    {{-- Lonceng notifikasi --}}
+                    @auth
+                        <a href="{{ route('notifikasi.index') }}" class="relative p-2 rounded-full hover:bg-gray-100 transition-colors" aria-label="Notifikasi">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell h-6 w-6 text-gray-700" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg>
+                            <span id="angka-notif" class="badge-angka badge-lonceng" @if ($notifBaru == 0) style="display:none" @endif>{{ $notifBaru }}</span>
+                        </a>
+                    @endauth
                     <div class="hidden sm:flex items-center space-x-2">
                         @auth
                             <div class="text-right leading-tight">
@@ -416,5 +429,21 @@
         </div>
     </footer>
     <script src="{{ asset('assets/js/bloom.js') }}"></script>
+    @auth
+        <script>
+            // Perbarui angka notifikasi setiap 30 detik tanpa perlu refresh halaman
+            setInterval(function () {
+                fetch('{{ route('notifikasi.jumlah') }}')
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
+                        var angka = document.getElementById('angka-notif');
+                        if (!angka) return;
+                        angka.textContent = data.jumlah;
+                        angka.style.display = data.jumlah > 0 ? 'inline-flex' : 'none';
+                    })
+                    .catch(function () {});
+            }, 30000);
+        </script>
+    @endauth
 </body>
 </html> 

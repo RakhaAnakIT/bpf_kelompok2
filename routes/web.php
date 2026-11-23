@@ -6,6 +6,7 @@ use App\Http\Controllers\PenjualPembeliController;
 use App\Http\Controllers\PenjualController;
 use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\PesananController;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\AuthController;
 
 // Beranda umum (tamu): halaman pertama saat website dibuka
@@ -62,4 +63,12 @@ Route::middleware('auth')->group(function () {
     // Pembeli atau penjual dari pesanan tersebut
     Route::post('pesanan/{id}/batal', [PesananController::class, 'batal'])->name('pesanan.batal');
     Route::post('pesanan/{id}/selesai', [PesananController::class, 'selesai'])->name('pesanan.selesai');
+});
+
+// Notifikasi (semua yang sudah login)
+Route::middleware('auth')->group(function () {
+    Route::get('notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::get('notifikasi/jumlah', [NotifikasiController::class, 'jumlah'])->name('notifikasi.jumlah');
+    Route::post('notifikasi/baca-semua', [NotifikasiController::class, 'bacaSemua'])->name('notifikasi.bacasemua');
+    Route::get('notifikasi/{id}', [NotifikasiController::class, 'buka'])->name('notifikasi.buka');
 });

@@ -2327,3 +2327,22 @@
 .tombol-wa:hover {
   background-color: #1ebe5b;
 }
+
+/* ===== Tambahan: Notifikasi ===== */
+.badge-lonceng {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-left: 0;
+}
+.notif-baru {
+  background-color: #fff7ed;
+  border-color: #fdba74;
+}
+.titik-baru {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: #ef4444;
+}
