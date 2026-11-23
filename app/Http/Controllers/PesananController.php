@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Pesanan;
 use App\Models\PenjualPembeli;
 use App\Models\Notifikasi;
+use App\Models\Rating;
 use Illuminate\Support\Facades\Auth;
 
 class PesananController extends Controller
@@ -82,7 +83,7 @@ class PesananController extends Controller
      */
     public function pembelian()
     {
-        $data['dataPesanan'] = Pesanan::with('barang', 'penjual')->where('pembeli_id', Auth::id())->latest()->get();
+        $data['dataPesanan'] = Pesanan::with('barang', 'penjual.ratingPenjual', 'rating')->where('pembeli_id', Auth::id())->latest()->get();
         return view('Pesanan.pembelian', $data);
     }
 
@@ -91,7 +92,7 @@ class PesananController extends Controller
      */
     public function penjualan()
     {
-        $data['dataPesanan'] = Pesanan::with('barang', 'pembeli')->where('penjual_id', Auth::id())->latest()->get();
+        $data['dataPesanan'] = Pesanan::with('barang', 'pembeli.ratingPembeli', 'rating')->where('penjual_id', Auth::id())->latest()->get();
         return view('Pesanan.penjualan', $data);
     }
 
@@ -197,8 +198,8 @@ class PesananController extends Controller
             $pesan = 'Transaksi selesai! Barang sudah terjual.';
 
             // Notifikasi ke kedua pihak
-            Notifikasi::kirim($pesanan->pembeli_id, 'Transaksi selesai', 'Transaksi "' . $pesanan->barang->nama_barang . '" sudah selesai. Terima kasih!', route('pesanan.pembelian'));
-            Notifikasi::kirim($pesanan->penjual_id, 'Transaksi selesai', 'Transaksi "' . $pesanan->barang->nama_barang . '" sudah selesai. Barang tercatat terjual.', route('pesanan.penjualan'));
+            Notifikasi::kirim($pesanan->pembeli_id, 'Transaksi selesai', 'Transaksi "' . $pesanan->barang->nama_barang . '" sudah selesai. Jangan lupa beri rating untuk penjual.', route('pesanan.pembelian'));
+            Notifikasi::kirim($pesanan->penjual_id, 'Transaksi selesai', 'Transaksi "' . $pesanan->barang->nama_barang . '" sudah selesai. Jangan lupa beri rating untuk pembeli.', route('pesanan.penjualan'));
         } else {
             $pesan = 'Konfirmasimu tersimpan. Menunggu konfirmasi dari pihak lain.';
 
@@ -213,6 +214,61 @@ class PesananController extends Controller
         $pesanan->save();
 
         return back()->with('success', $pesan);
+    }
+
+    /**
+     * Beri rating setelah pesanan selesai.
+     * Pembeli menilai penjual, penjual menilai pembeli. Masing-masing hanya 1x per pesanan.
+     */
+    public function rating(Request $request, string $id)
+    {
+        $request->validate([
+            'bintang' => 'required|integer|min:1|max:5',
+            'ulasan'  => 'nullable|max:300',
+        ], [
+            'bintang.required' => 'Pilih jumlah bintang terlebih dahulu.',
+        ]);
+
+        $pesanan = $this->pesananMilikSaya($id);
+
+        if ($pesanan->status != 'selesai') {
+            return back()->with('error', 'Rating hanya bisa diberikan setelah transaksi selesai.');
+        }
+
+        $sudahRating = Rating::where('pesanan_id', $pesanan->pesanan_id)->where('pemberi_id', Auth::id())->exists();
+        if ($sudahRating) {
+            return back()->with('error', 'Kamu sudah memberi rating untuk pesanan ini.');
+        }
+
+        // Kalau saya pembeli -> yang dinilai penjual, dan sebaliknya
+        if ($pesanan->pembeli_id == Auth::id()) {
+            $penerimaId    = $pesanan->penjual_id;
+            $peranPenerima = 'penjual';
+            $link          = route('pesanan.penjualan');
+        } else {
+            $penerimaId    = $pesanan->pembeli_id;
+            $peranPenerima = 'pembeli';
+            $link          = route('pesanan.pembelian');
+        }
+
+        $data['pemberi_id']     = Auth::id();
+        $data['penerima_id']    = $penerimaId;
+        $data['peran_penerima'] = $peranPenerima;
+        $data['bintang']        = $request->bintang;
+        $data['ulasan']         = $request->ulasan;
+        $data['pesanan_id']     = $pesanan->pesanan_id;
+
+        Rating::create($data);
+
+        // Notifikasi ke yang dinilai
+        Notifikasi::kirim(
+            $penerimaId,
+            'Kamu mendapat rating',
+            Auth::user()->nama . ' memberimu ' . $request->bintang . ' bintang untuk transaksi "' . $pesanan->barang->nama_barang . '".',
+            $link
+        );
+
+        return back()->with('success', 'Terima kasih, rating berhasil dikirim!');
     }
 
     /**
@@ -238,7 +294,7 @@ class PesananController extends Controller
     }
 
     /**
-     * Ubah status barang (dipakai otomatis oleh sistem).
+     * Ubah status barang.
      */
     private function ubahStatusBarang($barangId, $status)
     {

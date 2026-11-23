@@ -2346,3 +2346,24 @@
   border-radius: 9999px;
   background-color: #ef4444;
 }
+
+/* ===== Tambahan: Rating bintang ===== */
+.bintang-input {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  gap: 4px;
+}
+.bintang-input input {
+  display: none;
+}
+.bintang-input label {
+  font-size: 30px;
+  line-height: 1;
+  color: #d1d5db;
+  cursor: pointer;
+}
+.bintang-input input:checked ~ label,
+.bintang-input label:hover,
+.bintang-input label:hover ~ label {
+  color: #f59e0b;
+}

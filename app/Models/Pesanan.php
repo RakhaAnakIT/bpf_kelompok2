@@ -45,4 +45,10 @@ class Pesanan extends Model
     {
         return $this->belongsTo(User::class, 'penjual_id', 'id');
     }
+
+    // Rating yang diberikan untuk pesanan ini
+    public function rating()
+    {
+        return $this->hasMany(Rating::class, 'pesanan_id', 'pesanan_id');
+    }
 }

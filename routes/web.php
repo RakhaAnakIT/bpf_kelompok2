@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
     // Pembeli atau penjual dari pesanan tersebut
     Route::post('pesanan/{id}/batal', [PesananController::class, 'batal'])->name('pesanan.batal');
     Route::post('pesanan/{id}/selesai', [PesananController::class, 'selesai'])->name('pesanan.selesai');
+    Route::post('pesanan/{id}/rating', [PesananController::class, 'rating'])->name('pesanan.rating');
 });
 
 // Notifikasi (semua yang sudah login)

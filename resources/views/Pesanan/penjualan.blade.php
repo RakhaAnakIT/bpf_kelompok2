@@ -63,7 +63,13 @@
 
                             {{-- Rincian --}}
                             <div class="grid sm:grid-cols-2 gap-2 text-sm">
-                                <div><span class="text-muted-foreground">Pembeli:</span> {{ $item->pembeli->nama }} ({{ $item->pembeli->prodi }})</div>
+                                <div>
+                                    <span class="text-muted-foreground">Pembeli:</span> {{ $item->pembeli->nama }} ({{ $item->pembeli->prodi }})
+                                    @if ($item->pembeli->ratingPembeli->count() > 0)
+                                        &bull; <span class="text-primary">&#9733;</span> {{ number_format($item->pembeli->ratingPembeli->avg('bintang'), 1) }}
+                                        <span class="text-muted-foreground">({{ $item->pembeli->ratingPembeli->count() }})</span>
+                                    @endif
+                                </div>
                                 <div><span class="text-muted-foreground">Cara bayar:</span> {{ $labelBayar[$item->cara_bayar] }}</div>
                                 <div><span class="text-muted-foreground">Lokasi:</span> {{ $item->lokasi_ketemu }}</div>
                                 <div><span class="text-muted-foreground">Waktu:</span> {{ $item->waktu_ketemu->format('d M Y, H:i') }}</div>
@@ -77,6 +83,46 @@
                                 <div class="text-sm text-muted-foreground">
                                     Dibatalkan oleh {{ $item->dibatalkan_oleh == auth()->id() ? 'kamu' : 'pembeli' }}.
                                     Alasan: {{ $item->alasan_batal }}
+                                </div>
+                            @endif
+
+                            {{-- Rating (setelah transaksi selesai) --}}
+                            @if ($item->status == 'selesai')
+                                @php
+                                    $ratingSaya  = $item->rating->where('pemberi_id', auth()->id())->first();
+                                    $ratingLawan = $item->rating->where('pemberi_id', '!=', auth()->id())->first();
+                                @endphp
+                                <div class="rounded-md border border-border p-4 space-y-3">
+                                    @if ($ratingSaya)
+                                        <div class="text-sm">
+                                            <span class="text-muted-foreground">Rating kamu untuk pembeli:</span>
+                                            <span class="text-primary">{{ str_repeat('★', $ratingSaya->bintang) }}{{ str_repeat('☆', 5 - $ratingSaya->bintang) }}</span>
+                                            @if ($ratingSaya->ulasan) &mdash; "{{ $ratingSaya->ulasan }}" @endif
+                                        </div>
+                                    @else
+                                        <form action="{{ route('pesanan.rating', $item->pesanan_id) }}" method="POST" class="space-y-3">
+                                            @csrf
+                                            <div class="text-sm font-medium text-foreground">Beri rating untuk pembeli {{ $item->pembeli->nama }}</div>
+                                            <div class="bintang-input">
+                                                @for ($i = 5; $i >= 1; $i--)
+                                                    <input type="radio" id="bintang-{{ $item->pesanan_id }}-{{ $i }}" name="bintang" value="{{ $i }}">
+                                                    <label for="bintang-{{ $item->pesanan_id }}-{{ $i }}" title="{{ $i }} bintang">&#9733;</label>
+                                                @endfor
+                                            </div>
+                                            <textarea name="ulasan" rows="2" class="flex min-h-[60px] w-full rounded-md border px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-background border-border resize-none" placeholder="Ulasan singkat (opsional)"></textarea>
+                                            <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 shadow h-9 rounded-md px-4 bg-primary text-primary-foreground hover:bg-primary/90">Kirim Rating</button>
+                                        </form>
+                                    @endif
+
+                                    @if ($ratingLawan)
+                                        <div class="text-sm">
+                                            <span class="text-muted-foreground">Rating dari pembeli untukmu:</span>
+                                            <span class="text-primary">{{ str_repeat('★', $ratingLawan->bintang) }}{{ str_repeat('☆', 5 - $ratingLawan->bintang) }}</span>
+                                            @if ($ratingLawan->ulasan) &mdash; "{{ $ratingLawan->ulasan }}" @endif
+                                        </div>
+                                    @else
+                                        <div class="text-sm text-muted-foreground">Pembeli belum memberi rating.</div>
+                                    @endif
                                 </div>
                             @endif
 
@@ -154,7 +200,13 @@
 
                             {{-- Rincian --}}
                             <div class="grid sm:grid-cols-2 gap-2 text-sm">
-                                <div><span class="text-muted-foreground">Pembeli:</span> {{ $item->pembeli->nama }} ({{ $item->pembeli->prodi }})</div>
+                                <div>
+                                    <span class="text-muted-foreground">Pembeli:</span> {{ $item->pembeli->nama }} ({{ $item->pembeli->prodi }})
+                                    @if ($item->pembeli->ratingPembeli->count() > 0)
+                                        &bull; <span class="text-primary">&#9733;</span> {{ number_format($item->pembeli->ratingPembeli->avg('bintang'), 1) }}
+                                        <span class="text-muted-foreground">({{ $item->pembeli->ratingPembeli->count() }})</span>
+                                    @endif
+                                </div>
                                 <div><span class="text-muted-foreground">Cara bayar:</span> {{ $labelBayar[$item->cara_bayar] }}</div>
                                 <div><span class="text-muted-foreground">Lokasi:</span> {{ $item->lokasi_ketemu }}</div>
                                 <div><span class="text-muted-foreground">Waktu:</span> {{ $item->waktu_ketemu->format('d M Y, H:i') }}</div>
@@ -168,6 +220,46 @@
                                 <div class="text-sm text-muted-foreground">
                                     Dibatalkan oleh {{ $item->dibatalkan_oleh == auth()->id() ? 'kamu' : 'pembeli' }}.
                                     Alasan: {{ $item->alasan_batal }}
+                                </div>
+                            @endif
+
+                            {{-- Rating (setelah transaksi selesai) --}}
+                            @if ($item->status == 'selesai')
+                                @php
+                                    $ratingSaya  = $item->rating->where('pemberi_id', auth()->id())->first();
+                                    $ratingLawan = $item->rating->where('pemberi_id', '!=', auth()->id())->first();
+                                @endphp
+                                <div class="rounded-md border border-border p-4 space-y-3">
+                                    @if ($ratingSaya)
+                                        <div class="text-sm">
+                                            <span class="text-muted-foreground">Rating kamu untuk pembeli:</span>
+                                            <span class="text-primary">{{ str_repeat('★', $ratingSaya->bintang) }}{{ str_repeat('☆', 5 - $ratingSaya->bintang) }}</span>
+                                            @if ($ratingSaya->ulasan) &mdash; "{{ $ratingSaya->ulasan }}" @endif
+                                        </div>
+                                    @else
+                                        <form action="{{ route('pesanan.rating', $item->pesanan_id) }}" method="POST" class="space-y-3">
+                                            @csrf
+                                            <div class="text-sm font-medium text-foreground">Beri rating untuk pembeli {{ $item->pembeli->nama }}</div>
+                                            <div class="bintang-input">
+                                                @for ($i = 5; $i >= 1; $i--)
+                                                    <input type="radio" id="bintang-{{ $item->pesanan_id }}-{{ $i }}" name="bintang" value="{{ $i }}">
+                                                    <label for="bintang-{{ $item->pesanan_id }}-{{ $i }}" title="{{ $i }} bintang">&#9733;</label>
+                                                @endfor
+                                            </div>
+                                            <textarea name="ulasan" rows="2" class="flex min-h-[60px] w-full rounded-md border px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-background border-border resize-none" placeholder="Ulasan singkat (opsional)"></textarea>
+                                            <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 shadow h-9 rounded-md px-4 bg-primary text-primary-foreground hover:bg-primary/90">Kirim Rating</button>
+                                        </form>
+                                    @endif
+
+                                    @if ($ratingLawan)
+                                        <div class="text-sm">
+                                            <span class="text-muted-foreground">Rating dari pembeli untukmu:</span>
+                                            <span class="text-primary">{{ str_repeat('★', $ratingLawan->bintang) }}{{ str_repeat('☆', 5 - $ratingLawan->bintang) }}</span>
+                                            @if ($ratingLawan->ulasan) &mdash; "{{ $ratingLawan->ulasan }}" @endif
+                                        </div>
+                                    @else
+                                        <div class="text-sm text-muted-foreground">Pembeli belum memberi rating.</div>
+                                    @endif
                                 </div>
                             @endif
 
