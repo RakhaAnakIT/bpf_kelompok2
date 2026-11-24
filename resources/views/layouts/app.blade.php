@@ -13,7 +13,11 @@
 <body class="inter_7b064e0d-module__MOT0tq__className antialiased flex flex-col min-h-screen">
     @php
         // Halaman "Beranda" sesuai siapa yang membuka
-        if (auth()->check() && auth()->user()->role == 'penjual_pembeli') {
+        $isAdmin = auth()->check() && auth()->user()->role == 'admin';
+
+        if ($isAdmin) {
+            $home = route('admin.dashboard');
+        } elseif (auth()->check() && auth()->user()->role == 'penjual_pembeli') {
             $home = route('penjualpembeli.index');
         } elseif (auth()->check() && auth()->user()->role == 'penjual') {
             $home = route('penjual.index');
@@ -54,12 +58,19 @@
                         aria-label="Beranda" href="{{ $home }}">MARKET<span
                             class="text-primary">PCR</span></a>
                     <nav class="hidden md:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
-                        @if (!auth()->check() || auth()->user()->role != 'penjual')
+                        @if (!auth()->check() || in_array(auth()->user()->role, ['pembeli', 'penjual_pembeli']))
                             <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('beranda', 'penjualpembeli.index', 'pembeli.*') ? 'bg-orange-100 shadow-md' : '' }}"
                                 href="{{ $home }}">Beranda</a>
                         @endif
                         @auth
-                            @if (auth()->user()->role != 'pembeli')
+                            @if (auth()->user()->role == 'admin')
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('admin.dashboard') ? 'bg-orange-100 shadow-md' : '' }}" href="{{ route('admin.dashboard') }}">Ringkasan</a>
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('admin.pengguna*') ? 'bg-orange-100 shadow-md' : '' }}" href="{{ route('admin.pengguna') }}">Pengguna</a>
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('admin.barang*') ? 'bg-orange-100 shadow-md' : '' }}" href="{{ route('admin.barang') }}">Barang</a>
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('admin.pesanan*') ? 'bg-orange-100 shadow-md' : '' }}" href="{{ route('admin.pesanan') }}">Pesanan</a>
+                                <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('beranda') ? 'bg-orange-100 shadow-md' : '' }}" href="{{ route('beranda') }}">Katalog</a>
+                            @endif
+                            @if (in_array(auth()->user()->role, ['penjual', 'penjual_pembeli']))
                                 <a class="relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 {{ request()->routeIs('penjualpembeli.barangsaya', 'penjual.*') ? 'bg-orange-100 shadow-md' : '' }}"
                                     href="{{ $barangSaya }}">Barang Saya</a>
                             @endif
@@ -105,7 +116,7 @@
                             class="lucide lucide-x h-6 w-6 text-gray-700" aria-hidden="true">
                             <path d="M18 6 6 18"></path>
                             <path d="m6 6 12 12"></path>
-                        </svg></button>@if (!auth()->check() || auth()->user()->role != 'pembeli')
+                        </svg></button>@if (!auth()->check() || in_array(auth()->user()->role, ['penjual', 'penjual_pembeli']))
                     <a href="{{ $jualBarang }}"
                         class="hidden sm:inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -158,11 +169,18 @@
             <nav class="md:hidden mt-4 animate-in slide-in-from-top duration-200 hidden" role="navigation"
                 aria-label="Mobile navigation" id="mobile-menu">
                 <div class="flex flex-col space-y-3 pb-4 border-b border-gray-200">
-                    @if (!auth()->check() || auth()->user()->role != 'penjual')
+                    @if (!auth()->check() || in_array(auth()->user()->role, ['pembeli', 'penjual_pembeli']))
                         <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ $home }}">Beranda</a>
                     @endif
                     @auth
-                        @if (auth()->user()->role != 'pembeli')
+                        @if (auth()->user()->role == 'admin')
+                                <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('admin.dashboard') }}">Ringkasan</a>
+                                <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('admin.pengguna') }}">Pengguna</a>
+                                <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('admin.barang') }}">Barang</a>
+                                <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('admin.pesanan') }}">Pesanan</a>
+                                <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ route('beranda') }}">Katalog</a>
+                            @endif
+                        @if (in_array(auth()->user()->role, ['penjual', 'penjual_pembeli']))
                             <a class="text-sm font-medium py-2 px-3 rounded-lg transition-all text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ $barangSaya }}">Barang Saya</a>
                         @endif
                         @if (in_array(auth()->user()->role, ['pembeli', 'penjual_pembeli']))
@@ -174,7 +192,7 @@
                             </a>
                         @endif
                     @endauth
-                    @if (!auth()->check() || auth()->user()->role != 'pembeli')
+                    @if (!auth()->check() || in_array(auth()->user()->role, ['penjual', 'penjual_pembeli']))
                         <a class="inline-flex items-center justify-center gap-2 inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-sm"
                         href="{{ $jualBarang }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
                             height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

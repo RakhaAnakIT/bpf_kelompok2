@@ -19,6 +19,9 @@
                         @if (session('success'))
                             <div class="mb-4 rounded-md px-3 py-2 text-sm status-tersedia">{{ session('success') }}</div>
                         @endif
+                        @if (session('error'))
+                            <div class="mb-4 rounded-md px-3 py-2 text-sm kotak-error">{{ session('error') }}</div>
+                        @endif
                         <form action="{{ route('login.store') }}" method="POST" class="space-y-6">
                             @csrf
 

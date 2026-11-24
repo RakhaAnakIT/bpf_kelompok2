@@ -22,6 +22,7 @@ class Pesanan extends Model
         'selesai_penjual',
         'alasan_batal',
         'dibatalkan_oleh',
+        'catatan_admin',
     ];
 
     protected $casts = [

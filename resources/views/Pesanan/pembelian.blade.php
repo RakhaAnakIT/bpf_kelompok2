@@ -81,9 +81,13 @@
 
                             @if ($item->status == 'dibatalkan')
                                 <div class="text-sm text-muted-foreground">
-                                    Dibatalkan oleh {{ $item->dibatalkan_oleh == auth()->id() ? 'kamu' : 'penjual' }}.
+                                    Dibatalkan oleh {{ $item->dibatalkan_oleh == auth()->id() ? 'kamu' : ($item->dibatalkan_oleh == $item->penjual_id ? 'penjual' : 'Admin') }}.
                                     Alasan: {{ $item->alasan_batal }}
                                 </div>
+                            @endif
+
+                            @if ($item->catatan_admin)
+                                <div class="rounded-md px-3 py-2 text-sm status-menunggu">Catatan admin: {{ $item->catatan_admin }}</div>
                             @endif
 
                             {{-- Rating (setelah transaksi selesai) --}}
@@ -207,9 +211,13 @@
 
                             @if ($item->status == 'dibatalkan')
                                 <div class="text-sm text-muted-foreground">
-                                    Dibatalkan oleh {{ $item->dibatalkan_oleh == auth()->id() ? 'kamu' : 'penjual' }}.
+                                    Dibatalkan oleh {{ $item->dibatalkan_oleh == auth()->id() ? 'kamu' : ($item->dibatalkan_oleh == $item->penjual_id ? 'penjual' : 'Admin') }}.
                                     Alasan: {{ $item->alasan_batal }}
                                 </div>
+                            @endif
+
+                            @if ($item->catatan_admin)
+                                <div class="rounded-md px-3 py-2 text-sm status-menunggu">Catatan admin: {{ $item->catatan_admin }}</div>
                             @endif
 
                             {{-- Rating (setelah transaksi selesai) --}}

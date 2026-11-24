@@ -7,6 +7,7 @@ use App\Http\Controllers\PenjualController;
 use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 
 // Beranda umum (tamu): halaman pertama saat website dibuka
@@ -72,4 +73,27 @@ Route::middleware('auth')->group(function () {
     Route::get('notifikasi/jumlah', [NotifikasiController::class, 'jumlah'])->name('notifikasi.jumlah');
     Route::post('notifikasi/baca-semua', [NotifikasiController::class, 'bacaSemua'])->name('notifikasi.bacasemua');
     Route::get('notifikasi/{id}', [NotifikasiController::class, 'buka'])->name('notifikasi.buka');
+});
+
+// Admin (superadmin)
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('pengguna', [AdminController::class, 'pengguna'])->name('pengguna');
+    Route::get('pengguna/{id}', [AdminController::class, 'penggunaDetail'])->name('pengguna.detail');
+    Route::post('pengguna/{id}/role', [AdminController::class, 'ubahRole'])->name('pengguna.role');
+    Route::post('pengguna/{id}/blokir', [AdminController::class, 'blokir'])->name('pengguna.blokir');
+    Route::post('pengguna/{id}/buka-blokir', [AdminController::class, 'bukaBlokir'])->name('pengguna.bukablokir');
+
+    Route::get('barang', [AdminController::class, 'barang'])->name('barang');
+    Route::get('barang/{id}/edit', [AdminController::class, 'barangEdit'])->name('barang.edit');
+    Route::put('barang/{id}', [AdminController::class, 'barangUpdate'])->name('barang.update');
+    Route::delete('barang/{id}', [AdminController::class, 'barangHapus'])->name('barang.hapus');
+
+    Route::get('pesanan', [AdminController::class, 'pesanan'])->name('pesanan');
+    Route::get('pesanan/{id}', [AdminController::class, 'pesananDetail'])->name('pesanan.detail');
+    Route::post('pesanan/{id}/batal', [AdminController::class, 'pesananBatal'])->name('pesanan.batal');
+    Route::post('pesanan/{id}/selesai', [AdminController::class, 'pesananSelesai'])->name('pesanan.selesai');
+
+    Route::delete('rating/{id}', [AdminController::class, 'hapusRating'])->name('rating.hapus');
 });

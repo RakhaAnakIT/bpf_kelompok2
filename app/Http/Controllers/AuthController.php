@@ -60,7 +60,18 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
+            // Akun yang diblokir admin tidak boleh masuk
+            if (Auth::user()->diblokir_pada) {
+                Auth::logout();
+                return back()->withErrors(['nim' => 'Akunmu diblokir oleh admin.'])->onlyInput('nim');
+            }
+
             $pesan = 'Selamat datang, ' . Auth::user()->nama . '!';
+
+            // Admin ke Panel Admin
+            if (Auth::user()->role == 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', $pesan);
+            }
 
             // Arahkan sesuai role
             if (Auth::user()->role == 'penjual_pembeli') {

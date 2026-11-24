@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['nama', 'nim', 'prodi', 'no_hp', 'role', 'password'])]
+#[Fillable(['nama', 'nim', 'prodi', 'no_hp', 'role', 'diblokir_pada', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -26,6 +26,7 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'diblokir_pada' => 'datetime',
         ];
     }
 
@@ -51,5 +52,20 @@ class User extends Authenticatable
     public function linkWhatsapp($pesan)
     {
         return 'https://wa.me/' . $this->no_hp . '?text=' . urlencode($pesan);
+    }
+
+    /**
+     * Nama role yang enak dibaca. Contoh: penjual_pembeli -> Penjual & Pembeli
+     */
+    public function labelRole()
+    {
+        $label = [
+            'penjual'         => 'Penjual',
+            'pembeli'         => 'Pembeli',
+            'penjual_pembeli' => 'Penjual & Pembeli',
+            'admin'           => 'Admin',
+        ];
+
+        return $label[$this->role] ?? $this->role;
     }
 }

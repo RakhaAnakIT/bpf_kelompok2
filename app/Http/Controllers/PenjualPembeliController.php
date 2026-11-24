@@ -16,7 +16,10 @@ class PenjualPembeliController extends Controller
     public function index(Request $request)
     {
 
-        $query = PenjualPembeli::latest();
+        // Barang milik akun yang diblokir admin tidak ditampilkan
+        $query = PenjualPembeli::latest()->whereHas('user', function ($q) {
+            $q->whereNull('diblokir_pada');
+        });
 
         if (Auth::check()) {
             $query->where('user_id', '!=', Auth::id());

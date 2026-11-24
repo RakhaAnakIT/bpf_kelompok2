@@ -21,7 +21,10 @@ class BerandaController extends Controller
             return redirect()->route('pembeli.index');
         }
 
-        $query = PenjualPembeli::latest();
+        // Barang milik akun yang diblokir admin tidak ditampilkan
+        $query = PenjualPembeli::latest()->whereHas('user', function ($q) {
+            $q->whereNull('diblokir_pada');
+        });
 
         if ($request->q) {
             $query->where('nama_barang', 'like', '%' . $request->q . '%');

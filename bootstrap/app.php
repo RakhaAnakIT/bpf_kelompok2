@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CekRole::class,
         ]);
+
+        // Cek akun diblokir di setiap halaman
+        $middleware->web(append: [
+            \App\Http\Middleware\PastikanAkunAktif::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

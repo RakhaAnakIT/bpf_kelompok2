@@ -24,6 +24,9 @@ class PesananController extends Controller
         if ($barang->status != 'tersedia') {
             return back()->with('error', 'Barang ini sudah ' . $barang->status . '.');
         }
+        if ($barang->user->diblokir_pada) {
+            return back()->with('error', 'Penjual barang ini sedang diblokir admin.');
+        }
 
         $data['dataBarang'] = $barang;
         return view('Pesanan.create', $data);
@@ -43,7 +46,11 @@ class PesananController extends Controller
             'waktu_ketemu.after' => 'Waktu bertemu harus setelah waktu sekarang.',
         ]);
 
-        $barang = PenjualPembeli::findOrFail($id);
+        $barang = PenjualPembeli::with('user')->findOrFail($id);
+
+        if ($barang->user->diblokir_pada) {
+            return back()->with('error', 'Penjual barang ini sedang diblokir admin.');
+        }
 
         // Kunci barang: hanya berhasil kalau barang masih "tersedia" dan bukan milik sendiri.
         // Kalau ada 2 pembeli memesan bersamaan, hanya 1 yang berhasil.

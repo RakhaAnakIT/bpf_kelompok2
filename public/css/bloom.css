@@ -2367,3 +2367,22 @@
 .bintang-input label:hover ~ label {
   color: #f59e0b;
 }
+
+/* ===== Tambahan: Panel Admin ===== */
+.overflow-x-auto {
+  overflow-x: auto;
+}
+.text-left {
+  text-align: left;
+}
+.pt-2 {
+  padding-top: 0.5rem;
+}
+@media (min-width: 40rem) {
+  .sm\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .sm\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
