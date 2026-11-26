@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PenjualPembeli;
+use App\Models\Pesanan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,9 +13,16 @@ class PenjualController extends Controller
     /**
      * Halaman utama Penjual: hanya barang miliknya sendiri (Barang Saya).
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data['dataPenjualPembeli'] = PenjualPembeli::where('user_id', Auth::id())->latest()->get();
+        $query = PenjualPembeli::where('user_id', Auth::id())->latest();
+
+        // Pencarian dari kotak "Cari barang..." (mencari di barang milik sendiri)
+        if ($request->q) {
+            $query->where('nama_barang', 'like', '%' . $request->q . '%');
+        }
+
+        $data['dataPenjualPembeli'] = $query->get();
         return view('Penjual.index', $data);
     }
 
@@ -110,6 +118,12 @@ class PenjualController extends Controller
         // Barang yang sedang dipesan tidak boleh diubah/dihapus
         if ($barang->status == 'dipesan') {
             return redirect()->route('penjual.show', $id)->with('error', 'Barang sedang dipesan, tidak bisa diubah atau dihapus sampai pesanan selesai atau dibatalkan.');
+        }
+
+        // Barang yang sudah terjual tercatat di riwayat pembeli, jadi tidak boleh dihapus
+        $pernahTerjual = Pesanan::where('barang_id', $id)->where('status', 'selesai')->exists();
+        if ($pernahTerjual) {
+            return redirect()->route('penjual.show', $id)->with('error', 'Barang ini sudah terjual dan tercatat di riwayat transaksi, jadi tidak bisa dihapus.');
         }
 
         if ($barang->gambar) {

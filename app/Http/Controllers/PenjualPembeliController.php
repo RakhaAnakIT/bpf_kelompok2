@@ -142,6 +142,12 @@ class PenjualPembeliController extends Controller
             return redirect()->route('penjualpembeli.show', $id)->with('error', 'Barang sedang dipesan, tidak bisa diubah atau dihapus sampai pesanan selesai atau dibatalkan.');
         }
 
+        // Barang yang sudah terjual tercatat di riwayat pembeli, jadi tidak boleh dihapus
+        $pernahTerjual = Pesanan::where('barang_id', $id)->where('status', 'selesai')->exists();
+        if ($pernahTerjual) {
+            return redirect()->route('penjualpembeli.show', $id)->with('error', 'Barang ini sudah terjual dan tercatat di riwayat transaksi, jadi tidak bisa dihapus.');
+        }
+
         if ($barang->gambar) {
             Storage::disk('public')->delete($barang->gambar);
         }

@@ -16,6 +16,13 @@
                 Daftar barang yang sedang kamu jual. Klik barang untuk melihat detail, mengedit, atau menghapus.
             </p>
         </div>
+        {{-- Hasil pencarian --}}
+        @if (request('q'))
+            <div class="max-w-7xl mx-auto mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-md px-4 py-3 text-sm bg-muted">
+                <span>Hasil pencarian "<b>{{ request('q') }}</b>": {{ $dataPenjualPembeli->count() }} barang</span>
+                <a href="{{ url()->current() }}" class="font-medium text-primary">&times; Hapus pencarian</a>
+            </div>
+        @endif
         <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
             @forelse ($dataPenjualPembeli as $item)
                 <div

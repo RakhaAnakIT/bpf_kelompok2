@@ -15,6 +15,9 @@ use App\Http\Controllers\AuthController;
 Route::get('/marketpcr', [BerandaController::class, 'index'])->name('beranda');
 Route::get('barang/{id}', [BerandaController::class, 'show'])->name('beranda.show');
 
+// Halaman Kontak Kami (sementara masih kosong)
+Route::view('kontak', 'kontak')->name('kontak');
+
 Route::get('/', function () {
     return redirect()->route('beranda');
 });
