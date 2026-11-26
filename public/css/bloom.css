@@ -2386,3 +2386,60 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* ===== Tambahan: Foto profil ===== */
+.avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 2px solid #fde68a;
+}
+.avatar-inisial {
+  align-items: center;
+  justify-content: center;
+  background-color: #fef3c7;
+  color: #b45309;
+  font-weight: 700;
+  font-size: 15px;
+}
+.avatar-sedang {
+  width: 48px;
+  height: 48px;
+  font-size: 20px;
+}
+.avatar-besar {
+  width: 112px;
+  height: 112px;
+  font-size: 44px;
+  border-width: 4px;
+}
+.zona-bahaya {
+  border-color: #fca5a5;
+}
+.font-normal {
+  font-weight: 400;
+}
+.leading-tight {
+  line-height: 1.25;
+}
+.mt-8 {
+  margin-top: 2rem;
+}
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
+}
+.space-y-5 > :not(:last-child) {
+  margin-bottom: 1.25rem;
+}
+@media (min-width: 40rem) {
+  .sm\:items-start {
+    align-items: flex-start;
+  }
+  .sm\:text-left {
+    text-align: left;
+  }
+}

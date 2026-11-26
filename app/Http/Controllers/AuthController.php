@@ -66,6 +66,12 @@ class AuthController extends Controller
                 return back()->withErrors(['nim' => 'Akunmu diblokir oleh admin.'])->onlyInput('nim');
             }
 
+            // Akun yang sudah dihapus tidak boleh masuk
+            if (Auth::user()->hapus_akun) {
+                Auth::logout();
+                return back()->withErrors(['nim' => 'Akun ini sudah dihapus.'])->onlyInput('nim');
+            }
+
             $pesan = 'Selamat datang, ' . Auth::user()->nama . '!';
 
             // Admin ke Panel Admin

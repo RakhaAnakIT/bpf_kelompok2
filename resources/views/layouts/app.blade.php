@@ -137,10 +137,18 @@
                     @endauth
                     <div class="hidden sm:flex items-center space-x-2">
                         @auth
-                            <div class="text-right leading-tight">
-                                <div class="text-sm font-medium text-foreground">{{ auth()->user()->nama }}</div>
-                                <div class="text-xs text-muted-foreground">{{ str_replace('_', ' & ', ucwords(auth()->user()->role, '_')) }}</div>
-                            </div>
+                            {{-- Foto profil + nama: klik ke Profil Saya --}}
+                            <a href="{{ route('profil.show') }}" class="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-gray-100 transition-colors" title="Profil Saya">
+                                @if (auth()->user()->foto_profil)
+                                    <img src="{{ asset('storage/' . auth()->user()->foto_profil) }}" alt="Foto profil" class="avatar">
+                                @else
+                                    <span class="avatar avatar-inisial">{{ auth()->user()->inisial() }}</span>
+                                @endif
+                                <div class="text-left leading-tight">
+                                    <div class="text-sm font-medium text-foreground">{{ auth()->user()->nama }}</div>
+                                    <div class="text-xs text-muted-foreground">{{ auth()->user()->labelRole() }}</div>
+                                </div>
+                            </a>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-sm">Keluar</button>
@@ -205,10 +213,17 @@
                 </div>
                 <div class="flex flex-col space-y-3 pt-4 sm:hidden">
                     @auth
-                        <div class="text-sm text-foreground px-3">
-                            {{ auth()->user()->nama }}
-                            <span class="text-muted-foreground">({{ str_replace('_', ' & ', ucwords(auth()->user()->role, '_')) }})</span>
-                        </div>
+                        <a href="{{ route('profil.show') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50">
+                            @if (auth()->user()->foto_profil)
+                                    <img src="{{ asset('storage/' . auth()->user()->foto_profil) }}" alt="Foto profil" class="avatar">
+                                @else
+                                    <span class="avatar avatar-inisial">{{ auth()->user()->inisial() }}</span>
+                                @endif
+                            <span class="text-sm text-foreground">
+                                {{ auth()->user()->nama }}
+                                <span class="text-muted-foreground">({{ auth()->user()->labelRole() }})</span>
+                            </span>
+                        </a>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full text-sm">Keluar</button>

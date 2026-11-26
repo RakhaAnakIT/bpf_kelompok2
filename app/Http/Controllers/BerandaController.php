@@ -23,7 +23,9 @@ class BerandaController extends Controller
 
         // Barang milik akun yang diblokir admin tidak ditampilkan
         $query = PenjualPembeli::latest()->whereHas('user', function ($q) {
-            $q->whereNull('diblokir_pada');
+            $q->whereNull('diblokir_pada')
+                ->whereNull('hapus_akun')
+                ->whereIn('role', ['penjual', 'penjual_pembeli']); // pemilik yang sudah ganti role jadi Pembeli disembunyikan
         });
 
         if ($request->q) {

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['nama', 'nim', 'prodi', 'no_hp', 'role', 'diblokir_pada', 'password'])]
+#[Fillable(['nama', 'nim', 'prodi', 'no_hp', 'foto_profil', 'profil_publik', 'role', 'diblokir_pada', 'hapus_akun', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -27,6 +27,8 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'diblokir_pada' => 'datetime',
+            'hapus_akun' => 'datetime',
+            'profil_publik' => 'boolean',
         ];
     }
 
@@ -67,5 +69,21 @@ class User extends Authenticatable
         ];
 
         return $label[$this->role] ?? $this->role;
+    }
+
+    /**
+     * Huruf depan nama, dipakai kalau belum ada foto profil.
+     */
+    public function inisial()
+    {
+        return strtoupper(substr($this->nama, 0, 1));
+    }
+
+    /**
+     * Apakah user ini bisa menjual (role Penjual atau Penjual & Pembeli)?
+     */
+    public function bisaMenjual()
+    {
+        return in_array($this->role, ['penjual', 'penjual_pembeli']);
     }
 }

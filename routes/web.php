@@ -8,6 +8,7 @@ use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\AuthController;
 
 // Beranda umum (tamu): halaman pertama saat website dibuka
@@ -96,4 +97,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('pesanan/{id}/selesai', [AdminController::class, 'pesananSelesai'])->name('pesanan.selesai');
 
     Route::delete('rating/{id}', [AdminController::class, 'hapusRating'])->name('rating.hapus');
+});
+
+// Halaman publik profil (bisa dilihat siapa saja)
+Route::get('pengguna/{id}', [ProfilController::class, 'halamanPublik'])->name('profil.publik');
+
+// Profil Saya (semua yang sudah login)
+Route::middleware('auth')->group(function () {
+    Route::get('profil', [ProfilController::class, 'show'])->name('profil.show');
+    Route::get('profil/edit', [ProfilController::class, 'edit'])->name('profil.edit');
+    Route::put('profil', [ProfilController::class, 'update'])->name('profil.update');
+    Route::put('profil/password', [ProfilController::class, 'ubahPassword'])->name('profil.password');
+    Route::put('profil/role', [ProfilController::class, 'ubahRole'])->name('profil.role');
+    Route::delete('profil', [ProfilController::class, 'destroy'])->name('profil.destroy');
 });

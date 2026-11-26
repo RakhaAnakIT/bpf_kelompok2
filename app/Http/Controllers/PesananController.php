@@ -24,8 +24,8 @@ class PesananController extends Controller
         if ($barang->status != 'tersedia') {
             return back()->with('error', 'Barang ini sudah ' . $barang->status . '.');
         }
-        if ($barang->user->diblokir_pada) {
-            return back()->with('error', 'Penjual barang ini sedang diblokir admin.');
+        if ($barang->user->diblokir_pada || $barang->user->hapus_akun || !$barang->user->bisaMenjual()) {
+            return back()->with('error', 'Barang ini sedang tidak bisa dipesan.');
         }
 
         $data['dataBarang'] = $barang;
@@ -48,8 +48,8 @@ class PesananController extends Controller
 
         $barang = PenjualPembeli::with('user')->findOrFail($id);
 
-        if ($barang->user->diblokir_pada) {
-            return back()->with('error', 'Penjual barang ini sedang diblokir admin.');
+        if ($barang->user->diblokir_pada || $barang->user->hapus_akun || !$barang->user->bisaMenjual()) {
+            return back()->with('error', 'Barang ini sedang tidak bisa dipesan.');
         }
 
         // Kunci barang: hanya berhasil kalau barang masih "tersedia" dan bukan milik sendiri.

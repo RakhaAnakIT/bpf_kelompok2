@@ -61,7 +61,9 @@
                             <td class="px-4 py-3">{{ $item->prodi }}</td>
                             <td class="px-4 py-3">{{ $item->labelRole() }}</td>
                             <td class="px-4 py-3">
-                                @if ($item->diblokir_pada)
+                                @if ($item->hapus_akun)
+                                    <span class="text-xs font-semibold px-2 py-1 rounded-full status-dibatalkan">Akun dihapus</span>
+                                @elseif ($item->diblokir_pada)
                                     <span class="text-xs font-semibold px-2 py-1 rounded-full status-dibatalkan">Diblokir</span>
                                 @else
                                     <span class="text-xs font-semibold px-2 py-1 rounded-full status-selesai">Aktif</span>

@@ -38,7 +38,9 @@
                     <div class="text-muted-foreground">WhatsApp: {{ $dataPengguna->no_hp ?? '-' }}</div>
                     <div class="text-muted-foreground">Bergabung {{ $dataPengguna->created_at->format('d M Y') }}</div>
                     <div class="pt-2">
-                        @if ($dataPengguna->diblokir_pada)
+                        @if ($dataPengguna->hapus_akun)
+                            <span class="text-xs font-semibold px-2 py-1 rounded-full status-dibatalkan">Akun dihapus {{ $dataPengguna->hapus_akun->format('d M Y') }}</span>
+                        @elseif ($dataPengguna->diblokir_pada)
                             <span class="text-xs font-semibold px-2 py-1 rounded-full status-dibatalkan">Diblokir sejak {{ $dataPengguna->diblokir_pada->format('d M Y, H:i') }}</span>
                         @else
                             <span class="text-xs font-semibold px-2 py-1 rounded-full status-selesai">Aktif</span>

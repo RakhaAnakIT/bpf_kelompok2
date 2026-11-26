@@ -76,17 +76,20 @@
                 </div>
 
                 <div class="flex items-center gap-3 rounded-xl border border-border p-4">
-                    <div class="p-2 bg-primary/10 rounded-lg text-primary"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user h-4 w-4"
-                            aria-hidden="true">
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg></div>
+                    @if ($dataBarang->user->foto_profil)
+                        <img src="{{ asset('storage/' . $dataBarang->user->foto_profil) }}" alt="Foto profil" class="avatar avatar-sedang">
+                    @else
+                        <span class="avatar avatar-inisial avatar-sedang">{{ $dataBarang->user->inisial() }}</span>
+                    @endif
                     <div>
                         <div class="text-sm text-muted-foreground">Penjual</div>
                         <div class="font-medium text-foreground">
-                            {{ $dataBarang->user->nama }} &bull; {{ $dataBarang->user->prodi }} &bull;
+                            @if ($dataBarang->user->profil_publik && !$dataBarang->user->hapus_akun)
+                                <a href="{{ route('profil.publik', $dataBarang->user_id) }}" class="hover:text-primary underline">{{ $dataBarang->user->nama }}</a>
+                            @else
+                                {{ $dataBarang->user->nama }}
+                            @endif
+                            &bull; {{ $dataBarang->user->prodi }} &bull;
                             @if ($dataBarang->user->ratingPenjual->count() > 0)
                                 <span class="text-primary">&#9733;</span>
                                 {{ number_format($dataBarang->user->ratingPenjual->avg('bintang'), 1) }}
